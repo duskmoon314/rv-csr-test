@@ -12,13 +12,13 @@ use riscv::register::{sideleg, sie, sip, uie, uip};
 #[allow(unused_imports)]
 use riscv::register::{sstatus, ustatus};
 
-use crate::trap::push_context;
 
 #[macro_use]
 mod console;
 mod lang_items;
 mod logger;
 mod sbi;
+mod stack;
 mod trap;
 
 global_asm!(include_str!("entry.asm"));
@@ -55,11 +55,10 @@ pub fn rust_main() -> ! {
         sideleg::set_usoft();
     }
 
-    let sp: usize;
+    let sp: usize = stack::USER_STACK.get_sp();
     let entry: usize;
     let mut s: [usize; 12] = [0; 12];
     unsafe {
-        asm!("mv {}, sp", out(reg) sp);
         asm!("la {}, foo", out(reg) entry);
         asm!("mv {}, s0", out(reg) s[0]);
         asm!("mv {}, s1", out(reg) s[1]);
@@ -75,7 +74,7 @@ pub fn rust_main() -> ! {
         asm!("mv {}, s11", out(reg) s[11]);
     }
 
-    let ctx = push_context(trap::UserTrapContext::init(entry, sp, s), sp);
+    let ctx = stack::KERNEL_STACK.push_ucontext(trap::UserTrapContext::init(entry, sp, s));
 
     extern "C" {
         fn __restore_u(cx_addr: usize);

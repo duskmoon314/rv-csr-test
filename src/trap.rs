@@ -1,9 +1,9 @@
 use riscv::register::{
     mtvec::TrapMode,
     scause::{self},
-    sip,
+    sepc, sip,
     sstatus::Sstatus,
-    stval, stvec, ucause, uip,
+    stval, stvec, ucause, uepc, uip,
     ustatus::{self, Ustatus},
     utval, utvec,
 };
@@ -87,10 +87,12 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
         }
         _ => {
             error!(
-                "Unsupported trap {:?}, stval = {:#x}!",
+                "Unsupported trap {:?}, stval = {:#x}, sepc = {:#x}!",
                 scause.cause(),
-                stval
+                stval,
+                sepc::read()
             );
+            loop {}
         }
     }
     cx
@@ -109,19 +111,12 @@ pub fn user_trap_handler(cx: &mut UserTrapContext) -> &mut UserTrapContext {
         }
         _ => {
             error!(
-                "Unsupported trap {:?}, stval = {:#x}!",
+                "Unsupported trap {:?}, utval = {:#x}, uepc = {:#x}!",
                 ucause.cause(),
-                utval
+                utval,
+                uepc::read()
             );
         }
     }
     cx
-}
-
-pub fn push_context(cx: UserTrapContext, sp: usize) -> &'static mut UserTrapContext {
-    let ctx_ptr = (sp - core::mem::size_of::<UserTrapContext>()) as *mut UserTrapContext;
-    unsafe {
-        *ctx_ptr = cx;
-        ctx_ptr.as_mut().unwrap()
-    }
 }
