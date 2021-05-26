@@ -69,10 +69,10 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
     let scause = scause::read();
     let stval = stval::read();
     match scause.cause() {
-        // scause::Trap::Exception(scause::Exception::UserEnvCall) => {
-        //     cx.sepc += 4;
-        //     cx.x[10] = sbi::sbi_call(cx.x[17], cx.x[10], cx.x[11], cx.x[12]) as usize;
-        // }
+        scause::Trap::Exception(scause::Exception::UserEnvCall) => {
+            cx.sepc += 4;
+            cx.x[10] = sbi::sbi_call(cx.x[17], cx.x[10], cx.x[11], cx.x[12]) as usize;
+        }
         scause::Trap::Interrupt(scause::Interrupt::UserSoft) => {
             debug!("user soft in supervisor");
             unsafe {
@@ -104,7 +104,7 @@ pub fn user_trap_handler(cx: &mut UserTrapContext) -> &mut UserTrapContext {
     let utval = utval::read();
     match ucause.cause() {
         ucause::Trap::Interrupt(ucause::Interrupt::UserSoft) => {
-            // debug!("user soft");
+            debug!("user soft");
             unsafe {
                 uip::clear_usoft();
             }
