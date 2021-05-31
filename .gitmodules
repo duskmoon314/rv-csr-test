@@ -1,4 +1,0 @@
-[submodule "riscv"]
-	path = riscv
-	url = https://github.com/duskmoon314/riscv.git
-	branch = extN
