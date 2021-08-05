@@ -8,10 +8,12 @@
 // use console::ANSICON;
 #[macro_use]
 extern crate log;
-use riscv::register::{sideleg, sie, sip, uie, uip};
 #[allow(unused_imports)]
 use riscv::register::{sstatus, ustatus};
-
+use riscv::{
+    asm,
+    register::{sideleg, sie, sip, uie, uip},
+};
 
 #[macro_use]
 mod console;
@@ -25,20 +27,30 @@ global_asm!(include_str!("entry.asm"));
 
 fn clear_bss() {
     extern "C" {
-        fn sbss();
-        fn ebss();
+        fn s_bss();
+        fn e_bss();
+        fn e_bss_ma();
     }
-    (sbss as usize..ebss as usize).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
+    println!(
+        "s_bss: {:#x?}, e_bss: {:#x?}, e_bss_ma: {:#x?}",
+        s_bss as usize, e_bss as usize, e_bss_ma as usize
+    );
+    (s_bss as usize..e_bss_ma as usize).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
 }
 
 #[no_mangle]
 pub fn rust_main() -> ! {
-    logger::init();
-    clear_bss();
     trap::init();
-    info!("Hello rv-csr-test");
+    clear_bss();
+    println!("Hello rv-csr-test");
+    logger::init();
+    println!("logger init finished");
     info!("{:#x?}", ustatus::read());
     unsafe {
+        asm!("csrr zero, sideleg");
+        asm!("csrr zero, sedeleg");
+        asm!("csrwi sideleg, 0");
+        asm!("csrwi sedeleg, 0");
         sstatus::set_sie();
         sie::set_ssoft();
         sie::set_usoft();
@@ -53,6 +65,8 @@ pub fn rust_main() -> ! {
     unsafe {
         sstatus::clear_sie();
         sideleg::set_usoft();
+        asm!("csrr zero, sideleg");
+        asm!("csrr zero, sedeleg");
     }
 
     let sp: usize = stack::USER_STACK.get_sp();

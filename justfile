@@ -1,17 +1,19 @@
 QEMU := "../qemu-build/riscv64-softmmu/qemu-system-riscv64"
-TARGET := "riscv64gc-unknown-none-elf"
+TARGET := "riscv64imac-unknown-none-elf"
 MODE := "debug"
-OBJDUMP := "rust-objdump --arch-name=riscv64"
-OBJCOPY := "rust-objcopy --binary-architecture=riscv64"
+OBJDUMP := "riscv64-unknown-elf-objdump"
+OBJCOPY := "riscv64-unknown-elf-objcopy"
 # add-symbol-file target/riscv64gc-unknown-none-elf/release/rv-csr-test
 BUILD_PATH := "target/" + TARGET + "/" + MODE + "/"
 KERNEL_ELF := BUILD_PATH + "rv-csr-test"
 KERNEL_ASM := BUILD_PATH + "rv-csr-test.asm"
 KERNEL_BIN := BUILD_PATH + "rv-csr-test.bin"
+OS_BIN := BUILD_PATH + "os.bin"
 
 build:
     cargo build
-    {{OBJCOPY}} {{KERNEL_ELF}} --strip-all -O binary {{KERNEL_BIN}}
+    {{OBJCOPY}} -O binary {{KERNEL_ELF}} {{KERNEL_BIN}}
+    cp -f {{KERNEL_BIN}} {{OS_BIN}}
 
 disasm: build
     {{OBJDUMP}} -D -S {{KERNEL_ELF}} > {{KERNEL_ASM}}
