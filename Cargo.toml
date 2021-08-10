@@ -19,3 +19,4 @@ uart_xilinx = { git = "https://github.com/duskmoon314/uart-rs", optional = true,
 [features]
 default = ["board_lrv"]
 board_lrv = ["uart_xilinx"]
+board_qemu = []

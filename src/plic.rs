@@ -25,7 +25,6 @@ pub fn handle_external_interrupt() {
         match irq {
             #[cfg(feature = "board_qemu")]
             10 => {
-                uart::handle_interrupt();
                 debug!("[PLIC] kenel handling uart");
             }
             #[cfg(feature = "board_lrv")]
