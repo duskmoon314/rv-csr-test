@@ -14,11 +14,13 @@ use riscv::{
     asm,
     register::{sideleg, sie, sip, uie, uip},
 };
+use uart_xilinx::uart_lite::{self, uart};
 
 #[macro_use]
 mod console;
 mod lang_items;
 mod logger;
+mod plic;
 mod sbi;
 mod stack;
 mod trap;
@@ -46,12 +48,24 @@ pub fn rust_main() -> ! {
     logger::init();
     println!("logger init finished");
     info!("{:#x?}", ustatus::read());
+    plic::init();
+    let uart = uart::MmioUartAxiLite::new(0x6000_0000);
+    uart.enable_interrupt();
+    for i in 0..64 {
+        uart.write_byte(i as u8 + 'A' as u8);
+    }
+    info!("uart0 status: {:#x?}", uart.status());
+    for _ in 0..1000_000 {}
+    info!("uart0 status: {:#x?}", uart.status());
+    plic::handle_external_interrupt();
+
     unsafe {
         asm!("csrr zero, sideleg");
         asm!("csrr zero, sedeleg");
         asm!("csrwi sideleg, 0");
         asm!("csrwi sedeleg, 0");
         sstatus::set_sie();
+        sie::set_sext();
         sie::set_ssoft();
         sie::set_usoft();
         sip::set_ssoft();
@@ -121,5 +135,6 @@ pub fn rust_main() -> ! {
 
     info!("user mode");
 
+    info!("uart0 status: {:#x?}", uart.status());
     panic!("Shutdown machine!");
 }

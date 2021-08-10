@@ -85,6 +85,10 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
                 sip::clear_ssoft();
             }
         }
+        scause::Trap::Interrupt(scause::Interrupt::SupervisorExternal) => {
+            debug!("SEI");
+            crate::plic::handle_external_interrupt();
+        }
         _ => {
             error!(
                 "Unsupported trap {:?}, stval = {:#x}, sepc = {:#x}!",

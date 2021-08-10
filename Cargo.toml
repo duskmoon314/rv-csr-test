@@ -8,4 +8,14 @@ edition = "2018"
 
 [dependencies]
 log = "0.4"
-riscv = { git = "https://github.com/duskmoon314/riscv.git", branch = "extN", features = ["inline-asm"] }
+riscv = { git = "https://github.com/duskmoon314/riscv.git", branch = "extN", features = [
+    "inline-asm",
+] }
+rv-plic = { git = "https://github.com/duskmoon314/rv-plic" }
+uart_xilinx = { git = "https://github.com/duskmoon314/uart-rs", optional = true, features = [
+    "fmt",
+] }
+
+[features]
+default = ["board_lrv"]
+board_lrv = ["uart_xilinx"]
