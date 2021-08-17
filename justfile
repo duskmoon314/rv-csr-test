@@ -8,7 +8,7 @@ BUILD_PATH := "target/" + TARGET + "/" + MODE + "/"
 KERNEL_ELF := BUILD_PATH + "rv-csr-test"
 KERNEL_ASM := BUILD_PATH + "rv-csr-test.asm"
 KERNEL_BIN := BUILD_PATH + "rv-csr-test.bin"
-OS_BIN := BUILD_PATH + "os.bin"
+OS_BIN := BUILD_PATH + "rcore-n.bin"
 
 build:
     cargo build
