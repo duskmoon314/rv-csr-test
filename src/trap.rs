@@ -1,14 +1,15 @@
 use riscv::register::{
     mtvec::TrapMode,
     scause::{self},
-    sepc, sip,
+    sepc, sie, sip,
     sstatus::Sstatus,
     stval, stvec, ucause, uepc, uip,
     ustatus::{self, Ustatus},
     utval, utvec,
 };
 
-use crate::sbi;
+use crate::sbi::{self, set_timer};
+use core::sync::atomic::Ordering::Relaxed;
 
 #[repr(C)]
 pub struct TrapContext {
@@ -88,6 +89,14 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
         scause::Trap::Interrupt(scause::Interrupt::SupervisorExternal) => {
             debug!("SEI");
             crate::plic::handle_external_interrupt();
+        }
+        scause::Trap::Interrupt(scause::Interrupt::SupervisorTimer) => {
+            debug!("supervisor timer");
+            crate::IS_TIMEOUT.store(true, Relaxed);
+            set_timer(usize::MAX);
+            unsafe {
+                sie::clear_stimer();
+            }
         }
         _ => {
             error!(

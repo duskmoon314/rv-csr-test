@@ -12,11 +12,11 @@ riscv = { git = "https://github.com/duskmoon314/riscv.git", branch = "extN", fea
     "inline-asm",
 ] }
 rv-plic = { git = "https://github.com/duskmoon314/rv-plic" }
-uart_xilinx = { git = "https://github.com/duskmoon314/uart-rs", optional = true, features = [
-    "fmt",
-] }
+uart_xilinx = { version = "*", features = ["fmt"], optional = true }
+uart8250 = { version = "*", features = ["fmt"], optional = true }
+embedded-hal = "=1.0.0-alpha.4"
+nb = "1.0.0"
 
 [features]
-default = ["board_lrv"]
 board_lrv = ["uart_xilinx"]
-board_qemu = []
+board_qemu = ["uart8250"]

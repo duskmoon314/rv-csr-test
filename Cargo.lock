@@ -28,15 +28,24 @@ checksum = "dcb6dd1c2376d2e096796e234a70e17e94cc2d5d54ff8ce42b28cef1d0d359a4"
 
 [[package]]
 name = "bitflags"
-version = "1.2.1"
+version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf1de2fe8c75bc145a2f577add951f8134889b4795d47466a54a5c846d691693"
+checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
+
+[[package]]
+name = "embedded-hal"
+version = "1.0.0-alpha.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f2260cabeacf4bda1df1a8d54f67047a9aadf02fe14cfab07649f2cec6a4693b"
+dependencies = [
+ "nb",
+]
 
 [[package]]
 name = "lazy_static"
@@ -55,9 +64,15 @@ dependencies = [
 
 [[package]]
 name = "memchr"
-version = "2.4.0"
+version = "2.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b16bd47d9e329435e309c58469fe0791c2d0d1ba96ec0954152a5ae2b04387dc"
+checksum = "308cc39be01b73d0d18f82a0e7b2a3df85245f84af96fdddc5d202d27e47b86a"
+
+[[package]]
+name = "nb"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "546c37ac5d9e56f55e73b677106873d9d9f5190605e41a856503623648488cae"
 
 [[package]]
 name = "regex"
@@ -79,7 +94,7 @@ checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
 [[package]]
 name = "riscv"
 version = "0.6.0"
-source = "git+https://github.com/duskmoon314/riscv.git?branch=extN#889a073a71a2071fd857a6086c20e4bb042c4359"
+source = "git+https://github.com/duskmoon314/riscv.git?branch=extN#f31def9e0561556eed12f399d17fd704e76d18c1"
 dependencies = [
  "bare-metal",
  "bit_field",
@@ -109,9 +124,12 @@ dependencies = [
 name = "rv-csr-test"
 version = "0.1.0"
 dependencies = [
+ "embedded-hal",
  "log",
+ "nb",
  "riscv",
  "rv-plic",
+ "uart8250",
  "uart_xilinx",
 ]
 
@@ -139,9 +157,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
 
 [[package]]
+name = "uart8250"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f79d76028cbe0f22c51604082d2c7045b170fbbc1a0930fba295835a36531b90"
+dependencies = [
+ "bitflags",
+ "volatile-register",
+]
+
+[[package]]
 name = "uart_xilinx"
 version = "0.1.0"
-source = "git+https://github.com/duskmoon314/uart-rs#644ea7dd6cf9c89537a16e0b3d4c9bf098496102"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "385dd34924f5a9132a5e1803a663aeed4034f4b5d1ca08383e9011a616d8d17e"
 dependencies = [
  "bitflags",
  "volatile-register",
@@ -155,9 +184,9 @@ checksum = "77439c1b53d2303b20d9459b1ade71a83c716e3f9c34f3228c00e6f185d6c002"
 
 [[package]]
 name = "volatile-register"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d67cb4616d99b940db1d6bd28844ff97108b498a6ca850e5b6191a532063286"
+checksum = "9ee8f19f9d74293faf70901bc20ad067dc1ad390d2cbf1e3f75f721ffee908b6"
 dependencies = [
  "vcell",
 ]

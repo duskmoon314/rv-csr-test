@@ -27,7 +27,7 @@ macro_rules! print {
 #[macro_export]
 macro_rules! println {
     ($fmt: literal $(, $($arg: tt)+)?) => {
-        $crate::console::print(format_args!(concat!($fmt, "\n") $(, $($arg)+)?));
+        $crate::console::print(format_args!(concat!($fmt, "\r\n") $(, $($arg)+)?));
     }
 }
 
@@ -62,7 +62,7 @@ macro_rules! print_colorized {
 #[macro_export]
 macro_rules! println_colorized {
     ($fmt: literal, $foreground_color: expr, $background_color: expr $(, $($arg: tt)+)?) => {
-        $crate::console::print_colorized(format_args!(concat!($fmt, "\n") $(, $($arg)+)?), $foreground_color as u8, $background_color as u8);
+        $crate::console::print_colorized(format_args!(concat!($fmt, "\r\n") $(, $($arg)+)?), $foreground_color as u8, $background_color as u8);
     }
 }
 
