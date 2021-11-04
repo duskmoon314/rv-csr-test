@@ -74,34 +74,7 @@ pub fn rust_main() -> ! {
         sip::set_usoft();
     }
 
-    #[cfg(feature = "board_qemu")]
-    let mut uart1 = PollingSerial::new(get_base_addr_from_irq(14));
-    #[cfg(feature = "board_qemu")]
-    let mut uart2 = PollingSerial::new(get_base_addr_from_irq(15));
-
-    #[cfg(feature = "board_lrv")]
-    let mut uart1 = PollingSerial::new(get_base_addr_from_irq(6));
-    #[cfg(feature = "board_lrv")]
-    let mut uart2 = PollingSerial::new(get_base_addr_from_irq(7));
-
-    uart1.hardware_init(BAUD_RATE);
-    uart2.hardware_init(BAUD_RATE);
-    let t = time::read();
-    set_timer(t + CLOCK_FREQ);
-    while !IS_TIMEOUT.load(Relaxed) {
-        for _ in 0..14 {
-            let _ = uart1.try_write(0x55);
-            let _ = uart2.try_write(0x55);
-        }
-        for _ in 0..14 {
-            let _ = uart1.try_read();
-            let _ = uart2.try_read();
-        }
-    }
-
-    info!("uart1 rx {}, tx {}", uart1.rx_count, uart1.tx_count);
-    info!("uart2 rx {}, tx {}", uart2.rx_count, uart2.tx_count);
-
+    uart_speed_test();
     // extern "C" {
     //     fn foo();
     // }
@@ -180,4 +153,34 @@ fn uart_lite_test() {
     for _ in 0..1000_000 {}
     info!("uart0 status: {:#x?}", uart.status());
     plic::handle_external_interrupt();
+}
+
+fn uart_speed_test() {
+    #[cfg(feature = "board_qemu")]
+    let mut uart1 = PollingSerial::new(get_base_addr_from_irq(14));
+    #[cfg(feature = "board_qemu")]
+    let mut uart2 = PollingSerial::new(get_base_addr_from_irq(15));
+
+    #[cfg(feature = "board_lrv")]
+    let mut uart1 = PollingSerial::new(get_base_addr_from_irq(6));
+    #[cfg(feature = "board_lrv")]
+    let mut uart2 = PollingSerial::new(get_base_addr_from_irq(7));
+
+    uart1.hardware_init(BAUD_RATE);
+    uart2.hardware_init(BAUD_RATE);
+    let t = time::read();
+    set_timer(t + CLOCK_FREQ);
+    while !IS_TIMEOUT.load(Relaxed) {
+        for _ in 0..14 {
+            let _ = uart1.try_write(0x55);
+            let _ = uart2.try_write(0x55);
+        }
+        for _ in 0..14 {
+            let _ = uart1.try_read();
+            let _ = uart2.try_read();
+        }
+    }
+
+    info!("uart1 rx {}, tx {}", uart1.rx_count, uart1.tx_count);
+    info!("uart2 rx {}, tx {}", uart2.rx_count, uart2.tx_count);
 }
