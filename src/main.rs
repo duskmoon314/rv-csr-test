@@ -34,7 +34,7 @@ static IS_TIMEOUT: AtomicBool = AtomicBool::new(false);
 pub const CLOCK_FREQ: usize = 12500000;
 #[cfg(feature = "board_lrv")]
 pub const CLOCK_FREQ: usize = 10_000_000;
-pub const BAUD_RATE: usize = 6_25;
+pub const BAUD_RATE: usize = 6_250_000;
 
 global_asm!(include_str!("entry.asm"));
 
