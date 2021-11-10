@@ -1,7 +1,8 @@
 QEMU := "../qemu-build/riscv64-softmmu/qemu-system-riscv64"
 SERIAL_FLAGS := "-serial /dev/pts/1 -serial /dev/null -serial /dev/null -serial tcp::23334,server,nowait -serial tcp:localhost:23334"
+# SERIAL_FLAGS := "-serial /dev/pts/1 -serial /dev/null -serial /dev/null -serial /dev/null -serial /dev/null"
 TARGET := "riscv64imac-unknown-none-elf"
-MODE := "debug"
+MODE := "release"
 OBJDUMP := "riscv64-unknown-elf-objdump"
 OBJCOPY := "riscv64-unknown-elf-objcopy"
 # add-symbol-file target/riscv64gc-unknown-none-elf/release/rv-csr-test
@@ -19,7 +20,7 @@ build:
 
 build_lrv:
     cp src/linker-lrv.ld src/linker.ld
-    cargo build --features "board_qemu"
+    cargo build --features "board_lrv" --release
     {{OBJCOPY}} -O binary {{KERNEL_ELF}} {{KERNEL_BIN}}
     cp -f {{KERNEL_BIN}} {{KERNEL_LRV_BIN}}
     rm src/linker.ld
