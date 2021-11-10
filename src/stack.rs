@@ -1,8 +1,7 @@
-use crate::trap::{TrapContext, UserTrapContext};
-
-#[allow(unused)]
-const USER_STACK_SIZE: usize = 4096 * 2;
-const KERNEL_STACK_SIZE: usize = 4096 * 2;
+use crate::{
+    config::{KERNEL_STACK_SIZE, USER_STACK_SIZE},
+    trap::{TrapContext, UserTrapContext},
+};
 
 #[repr(align(4096))]
 pub struct KernelStack {

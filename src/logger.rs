@@ -1,4 +1,7 @@
-use crate::console::{print_colorized, ANSICON};
+use crate::{
+    console::{print_colorized, ANSICON},
+    hart_id,
+};
 use log::{Level, LevelFilter, Metadata, Record};
 
 static LOGGER: SimpleLogger = SimpleLogger;
@@ -25,7 +28,12 @@ impl log::Log for SimpleLogger {
     fn log(&self, record: &Record) {
         if self.enabled(record.metadata()) {
             print_colorized(
-                format_args!("[{:>5}] : {}\r\n", record.level(), record.args()),
+                format_args!(
+                    "[{:>5} {}] : {}\r\n",
+                    record.level(),
+                    hart_id(),
+                    record.args()
+                ),
                 level_to_color(record.level()),
                 49 as u8,
             )
