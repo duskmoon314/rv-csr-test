@@ -1,3 +1,4 @@
+pub const KERNEL_HEAP_SIZE: usize = 0x20_0000;
 pub const USER_STACK_SIZE: usize = 0x4000;
 pub const KERNEL_STACK_SIZE: usize = 0x4000;
 

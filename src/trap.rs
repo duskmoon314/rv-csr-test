@@ -8,7 +8,10 @@ use riscv::register::{
     utval, utvec,
 };
 
-use crate::sbi::{self, set_timer};
+use crate::{
+    hart_id,
+    sbi::{self, set_timer},
+};
 use core::sync::atomic::Ordering::Relaxed;
 
 #[repr(C)]
@@ -58,7 +61,6 @@ pub fn init() {
         asm!("csrwi sideleg, 0");
         asm!("csrwi sedeleg, 0");
         sstatus::set_sie();
-        sie::set_sext();
         sie::set_ssoft();
         sie::set_stimer();
         sie::set_usoft();
@@ -96,11 +98,11 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
             }
         }
         scause::Trap::Interrupt(scause::Interrupt::SupervisorExternal) => {
-            debug!("SEI");
-            crate::plic::handle_external_interrupt();
+            // debug!("SEI");
+            crate::plic::handle_external_interrupt(hart_id());
         }
         scause::Trap::Interrupt(scause::Interrupt::SupervisorTimer) => {
-            // debug!("supervisor timer");
+            debug!("supervisor timer");
             crate::IS_TIMEOUT.store(true, Relaxed);
             set_timer(usize::MAX);
             unsafe {

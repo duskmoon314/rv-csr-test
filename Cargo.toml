@@ -7,6 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+buddy_system_allocator = "0.8.0"
 log = "0.4"
 riscv = { git = "https://github.com/duskmoon314/riscv.git", branch = "extN", features = [
     "inline-asm",
@@ -16,6 +17,8 @@ uart_xilinx = { version = "*", features = ["fmt"], optional = true }
 uart8250 = { version = "*", features = ["fmt"], optional = true }
 embedded-hal = "=1.0.0-alpha.4"
 nb = "1.0.0"
+spin = "0.9"
+lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
 
 [features]
 board_lrv = ["uart_xilinx"]

@@ -4,18 +4,21 @@
 #![feature(llvm_asm)]
 #![feature(asm)]
 #![feature(panic_info_message)]
+#![feature(alloc_error_handler)]
 
 // use console::ANSICON;
 #[macro_use]
 extern crate log;
+extern crate alloc;
+
 use crate::{
     config::{CLOCK_FREQ, CPU_NUM},
     sbi::{send_ipi, set_timer},
-    user_uart::{get_base_addr_from_irq, PollingSerial},
+    user_uart::{get_base_addr_from_irq, BufferedSerial, PollingSerial},
 };
 use core::sync::atomic::{AtomicBool, Ordering::Relaxed};
 use embedded_hal::{prelude::_embedded_hal_serial_Write, serial::Read};
-use riscv::register::{sideleg, sip, sstatus, time, uie, uip, ustatus};
+use riscv::register::{sideleg, sie, sip, sstatus, time, uie, uip, ustatus};
 #[cfg(feature = "board_lrv")]
 use uart_xilinx::uart_lite::MmioUartAxiLite;
 
@@ -24,6 +27,7 @@ mod console;
 mod config;
 mod lang_items;
 mod logger;
+mod mm;
 mod plic;
 mod sbi;
 mod stack;
@@ -32,6 +36,7 @@ mod user_uart;
 
 static IS_TIMEOUT: AtomicBool = AtomicBool::new(false);
 static IS_HART1_INIT: AtomicBool = AtomicBool::new(false);
+pub static HAS_INTR: [AtomicBool; CPU_NUM] = [AtomicBool::new(false), AtomicBool::new(false)];
 pub const BAUD_RATE: usize = 6_250_000;
 
 global_asm!(include_str!("entry.asm"));
@@ -50,11 +55,11 @@ fn clear_bss() {
         fn e_bss();
         fn e_bss_ma();
     }
+    (s_bss as usize..e_bss_ma as usize).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
     println!(
         "s_bss: {:#x?}, e_bss: {:#x?}, e_bss_ma: {:#x?}",
         s_bss as usize, e_bss as usize, e_bss_ma as usize
     );
-    (s_bss as usize..e_bss_ma as usize).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
 }
 
 #[no_mangle]
@@ -64,8 +69,10 @@ pub fn rust_main(hart_id: usize) -> ! {
         clear_bss();
         println!("Hello rv-csr-test");
         logger::init();
+        plic::init();
         println!("logger init finished");
         info!("{:#x?}", ustatus::read());
+        mm::init_heap();
         for i in 1..CPU_NUM {
             debug!("Start {}", i);
             let mask: usize = 1 << i;
@@ -78,13 +85,17 @@ pub fn rust_main(hart_id: usize) -> ! {
     }
 
     uart_speed_test_multihart(hart_id);
+    info!("polling mode test finished");
+    delay(1000);
+    uart_speed_test_multihart_intr(hart_id);
+    info!("interrupt mode test finished");
     delay(1000);
     unsafe {
         sip::set_ssoft();
         sip::set_usoft();
     }
 
-    uart_speed_test();
+    // uart_speed_test();
     // extern "C" {
     //     fn foo();
     // }
@@ -161,7 +172,7 @@ fn uart_lite_test() {
     info!("uart0 status: {:#x?}", uart.status());
     for _ in 0..1000_000 {}
     info!("uart0 status: {:#x?}", uart.status());
-    plic::handle_external_interrupt();
+    plic::handle_external_interrupt(0);
 }
 
 fn uart_speed_test() {
@@ -207,8 +218,13 @@ fn uart_speed_test_multihart(hart_id: usize) {
     let mut uart1 = PollingSerial::new(get_base_addr_from_irq(6 + hart_id as u16));
 
     uart1.hardware_init(BAUD_RATE);
+    IS_TIMEOUT.store(false, Relaxed);
     let t = time::read();
     set_timer(t + CLOCK_FREQ);
+    unsafe {
+        sie::set_stimer();
+    }
+
     while !IS_TIMEOUT.load(Relaxed) {
         for _ in 0..14 {
             let _ = uart1.try_write(0x55);
@@ -221,4 +237,44 @@ fn uart_speed_test_multihart(hart_id: usize) {
         delay(100);
     }
     info!("uart rx {}, tx {}", uart1.rx_count, uart1.tx_count);
+}
+
+fn uart_speed_test_multihart_intr(hart_id: usize) {
+    plic::init_hart(hart_id);
+
+    #[cfg(feature = "board_qemu")]
+    let irq = 14 + hart_id as u16;
+
+    #[cfg(feature = "board_lrv")]
+    let irq = 6 + hart_id as u16;
+
+    let mut uart1 = BufferedSerial::new(get_base_addr_from_irq(irq));
+    uart1.hardware_init(BAUD_RATE);
+
+    IS_TIMEOUT.store(false, Relaxed);
+    let t = time::read();
+    set_timer(t + CLOCK_FREQ);
+    unsafe {
+        sie::set_stimer();
+        sie::set_sext();
+    }
+
+    while !IS_TIMEOUT.load(Relaxed) {
+        for _ in 0..14 {
+            let _ = uart1.try_write(0x55);
+        }
+        for _ in 0..14 {
+            let _ = uart1.try_read();
+        }
+        if HAS_INTR[hart_id].load(Relaxed) {
+            uart1.interrupt_handler();
+            HAS_INTR[hart_id].store(false, Relaxed);
+            plic::Plic::complete(plic::get_context(hart_id, 'S'), irq);
+            // info!("new intr!");
+        }
+    }
+    info!(
+        "intr uart rx {}, tx {}, rx_intr {}, tx_intr {}",
+        uart1.rx_count, uart1.tx_count, uart1.rx_intr_count, uart1.tx_intr_count
+    );
 }

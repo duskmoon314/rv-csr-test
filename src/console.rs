@@ -1,5 +1,7 @@
 use crate::sbi::console_putchar;
 use core::fmt::{self, Write};
+use lazy_static::*;
+use spin::Mutex;
 
 struct Stdout;
 
@@ -12,9 +14,13 @@ impl Write for Stdout {
     }
 }
 
+lazy_static! {
+    static ref STDOUT: Mutex<Stdout> = Mutex::new(Stdout {});
+}
+
 #[allow(dead_code)]
 pub fn print(args: fmt::Arguments) {
-    Stdout.write_fmt(args).unwrap();
+    STDOUT.lock().write_fmt(args).unwrap();
 }
 
 #[macro_export]
@@ -47,7 +53,8 @@ macro_rules! colorize {
 
 /// Use colorize! to print with color
 pub fn print_colorized(args: fmt::Arguments, foreground_color: u8, background_color: u8) {
-    Stdout
+    STDOUT
+        .lock()
         .write_fmt(colorize!(args, foreground_color, background_color))
         .unwrap();
 }

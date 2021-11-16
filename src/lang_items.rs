@@ -20,5 +20,9 @@ fn panic(info: &PanicInfo) -> ! {
             info.message().unwrap()
         );
     }
+    #[cfg(feature = "board_lrv")]
+    loop {}
+
+    #[cfg(feature = "board_qemu")]
     shutdown()
 }
