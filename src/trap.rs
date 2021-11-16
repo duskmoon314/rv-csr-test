@@ -103,7 +103,7 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
         scause::Trap::Interrupt(scause::Interrupt::SupervisorTimer) => {
             debug!("supervisor timer");
             crate::IS_TIMEOUT.store(true, Relaxed);
-            set_timer(0xFFFFFFFF);
+            set_timer(isize::MAX as usize);
         }
         _ => {
             error!(
