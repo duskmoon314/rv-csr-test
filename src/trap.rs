@@ -1,7 +1,6 @@
 use riscv::register::{
     mtvec::TrapMode,
-    scause::{self},
-    sepc, sie, sip,
+    scause, sepc, sie, sip,
     sstatus::{self, Sstatus},
     stval, stvec, ucause, uepc, uip,
     ustatus::{self, Ustatus},
@@ -99,15 +98,12 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
         }
         scause::Trap::Interrupt(scause::Interrupt::SupervisorExternal) => {
             // debug!("SEI");
-            crate::plic::handle_external_interrupt(hart_id());
+            crate::plic::handle_external_interrupt(hart_id(), 'S');
         }
         scause::Trap::Interrupt(scause::Interrupt::SupervisorTimer) => {
             debug!("supervisor timer");
             crate::IS_TIMEOUT.store(true, Relaxed);
-            set_timer(usize::MAX);
-            unsafe {
-                sie::clear_stimer();
-            }
+            set_timer(0xFFFFFFFF);
         }
         _ => {
             error!(
@@ -132,6 +128,9 @@ pub fn user_trap_handler(cx: &mut UserTrapContext) -> &mut UserTrapContext {
             unsafe {
                 uip::clear_usoft();
             }
+        }
+        ucause::Trap::Interrupt(ucause::Interrupt::UserExternal) => {
+            crate::plic::handle_external_interrupt(hart_id(), 'U');
         }
         _ => {
             error!(

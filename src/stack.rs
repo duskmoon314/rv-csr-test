@@ -1,25 +1,27 @@
 use crate::{
-    config::{KERNEL_STACK_SIZE, USER_STACK_SIZE},
+    config::{CPU_NUM, KERNEL_STACK_SIZE, USER_STACK_SIZE},
     trap::{TrapContext, UserTrapContext},
 };
 
 #[repr(align(4096))]
+#[derive(Copy, Clone)]
 pub struct KernelStack {
     data: [u8; KERNEL_STACK_SIZE],
 }
 
 #[repr(align(4096))]
+#[derive(Copy, Clone)]
 pub struct UserStack {
     data: [u8; USER_STACK_SIZE],
 }
 
-pub static KERNEL_STACK: KernelStack = KernelStack {
+pub static KERNEL_STACK: [KernelStack; CPU_NUM] = [KernelStack {
     data: [0; KERNEL_STACK_SIZE],
-};
+}; CPU_NUM];
 
-pub static USER_STACK: UserStack = UserStack {
+pub static USER_STACK: [UserStack; CPU_NUM] = [UserStack {
     data: [0; USER_STACK_SIZE],
-};
+}; CPU_NUM];
 
 impl UserStack {
     pub fn get_sp(&self) -> usize {

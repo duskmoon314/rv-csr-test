@@ -51,12 +51,11 @@ pub fn init_hart(hart_id: usize) {
     Plic::set_threshold(get_context(hart_id, 'M'), Priority::never());
 }
 
-pub fn handle_external_interrupt(hart_id: usize) {
-    let context = get_context(hart_id, 'S');
+pub fn handle_external_interrupt(hart_id: usize, mode: char) {
+    let context = get_context(hart_id, mode);
     while let Some(irq) = Plic::claim(context) {
         // debug!("[PLIC] IRQ: {:?}", irq);
         HAS_INTR[hart_id].store(true, Relaxed);
         // Plic::complete(context, irq)
     }
 }
-

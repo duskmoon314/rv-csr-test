@@ -13,6 +13,7 @@ extern crate alloc;
 
 use crate::{
     config::{CLOCK_FREQ, CPU_NUM},
+    plic::Plic,
     sbi::{send_ipi, set_timer},
     user_uart::{get_base_addr_from_irq, BufferedSerial, PollingSerial},
 };
@@ -87,7 +88,7 @@ pub fn rust_main(hart_id: usize) -> ! {
     uart_speed_test_multihart(hart_id);
     info!("polling mode test finished");
     delay(1000);
-    uart_speed_test_multihart_intr(hart_id);
+    uart_speed_test_multihart_intr(hart_id, 'S');
     info!("interrupt mode test finished");
     delay(1000);
     unsafe {
@@ -103,11 +104,12 @@ pub fn rust_main(hart_id: usize) -> ! {
     unsafe {
         sstatus::clear_sie();
         sideleg::set_usoft();
+        sideleg::set_uext();
         asm!("csrr zero, sideleg");
         asm!("csrr zero, sedeleg");
     }
 
-    let sp: usize = stack::USER_STACK.get_sp();
+    let sp: usize = stack::USER_STACK[hart_id].get_sp();
     let entry: usize;
     let mut s: [usize; 12] = [0; 12];
     unsafe {
@@ -126,7 +128,7 @@ pub fn rust_main(hart_id: usize) -> ! {
         asm!("mv {}, s11", out(reg) s[11]);
     }
 
-    let ctx = stack::KERNEL_STACK.push_ucontext(trap::UserTrapContext::init(entry, sp, s));
+    let ctx = stack::KERNEL_STACK[hart_id].push_ucontext(trap::UserTrapContext::init(entry, sp, s));
 
     extern "C" {
         fn __restore_u(cx_addr: usize);
@@ -157,7 +159,8 @@ pub fn rust_main(hart_id: usize) -> ! {
     }
 
     info!("user mode");
-
+    uart_speed_test_multihart_intr(hart_id, 'U');
+    delay(1000);
     panic!("Shutdown machine!");
 }
 
@@ -172,7 +175,7 @@ fn uart_lite_test() {
     info!("uart0 status: {:#x?}", uart.status());
     for _ in 0..1000_000 {}
     info!("uart0 status: {:#x?}", uart.status());
-    plic::handle_external_interrupt(0);
+    plic::handle_external_interrupt(0, 'S');
 }
 
 fn uart_speed_test() {
@@ -221,9 +224,6 @@ fn uart_speed_test_multihart(hart_id: usize) {
     IS_TIMEOUT.store(false, Relaxed);
     let t = time::read();
     set_timer(t + CLOCK_FREQ);
-    unsafe {
-        sie::set_stimer();
-    }
 
     while !IS_TIMEOUT.load(Relaxed) {
         for _ in 0..14 {
@@ -239,8 +239,9 @@ fn uart_speed_test_multihart(hart_id: usize) {
     info!("uart rx {}, tx {}", uart1.rx_count, uart1.tx_count);
 }
 
-fn uart_speed_test_multihart_intr(hart_id: usize) {
+fn uart_speed_test_multihart_intr(hart_id: usize, mode: char) {
     plic::init_hart(hart_id);
+    let context = plic::get_context(hart_id, mode);
 
     #[cfg(feature = "board_qemu")]
     let irq = 14 + hart_id as u16;
@@ -250,15 +251,21 @@ fn uart_speed_test_multihart_intr(hart_id: usize) {
 
     let mut uart1 = BufferedSerial::new(get_base_addr_from_irq(irq));
     uart1.hardware_init(BAUD_RATE);
-
+    Plic::enable(context, irq);
     IS_TIMEOUT.store(false, Relaxed);
     let t = time::read();
     set_timer(t + CLOCK_FREQ);
-    unsafe {
-        sie::set_stimer();
-        sie::set_sext();
+    match mode {
+        'S' => unsafe {
+            sie::set_sext();
+        },
+        'U' => unsafe {
+            uie::set_uext();
+        },
+        _ => {
+            error!("{} mode not supported!", mode);
+        }
     }
-
     while !IS_TIMEOUT.load(Relaxed) {
         for _ in 0..14 {
             let _ = uart1.try_write(0x55);
@@ -269,10 +276,11 @@ fn uart_speed_test_multihart_intr(hart_id: usize) {
         if HAS_INTR[hart_id].load(Relaxed) {
             uart1.interrupt_handler();
             HAS_INTR[hart_id].store(false, Relaxed);
-            plic::Plic::complete(plic::get_context(hart_id, 'S'), irq);
+            Plic::complete(context, irq);
             // info!("new intr!");
         }
     }
+    delay(100);
     info!(
         "intr uart rx {}, tx {}, rx_intr {}, tx_intr {}",
         uart1.rx_count, uart1.tx_count, uart1.rx_intr_count, uart1.tx_intr_count
