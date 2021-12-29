@@ -212,6 +212,7 @@ impl PollingSerial {
         hardware.write_fcr(0b11_000_11_1);
     }
 
+    #[allow(unused)]
     pub fn interrupt_handler(&mut self) {}
 }
 

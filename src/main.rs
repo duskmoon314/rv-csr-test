@@ -1,8 +1,5 @@
 #![no_std]
 #![no_main]
-#![feature(global_asm)]
-#![feature(llvm_asm)]
-#![feature(asm)]
 #![feature(panic_info_message)]
 #![feature(alloc_error_handler)]
 
@@ -10,6 +7,7 @@
 #[macro_use]
 extern crate log;
 extern crate alloc;
+use core::arch::{asm, global_asm};
 
 use crate::{
     config::{CLOCK_FREQ, CPU_NUM},
@@ -165,6 +163,7 @@ pub fn rust_main(hart_id: usize) -> ! {
 }
 
 #[cfg(feature = "board_lrv")]
+#[allow(unused)]
 fn uart_lite_test() {
     plic::init();
     let uart = MmioUartAxiLite::new(0x6000_0000);
@@ -178,6 +177,7 @@ fn uart_lite_test() {
     plic::handle_external_interrupt(0, 'S');
 }
 
+#[allow(unused)]
 fn uart_speed_test() {
     #[cfg(feature = "board_qemu")]
     let mut uart1 = PollingSerial::new(get_base_addr_from_irq(14));

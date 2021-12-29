@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use crate::{console::ANSICON, sbi::shutdown};
 use core::panic::PanicInfo;
 

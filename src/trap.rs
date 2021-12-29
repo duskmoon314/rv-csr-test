@@ -1,3 +1,9 @@
+use crate::{
+    hart_id,
+    sbi::{self, set_timer},
+};
+use core::arch::{asm, global_asm};
+use core::sync::atomic::Ordering::Relaxed;
 use riscv::register::{
     mtvec::TrapMode,
     scause, sepc, sie, sip,
@@ -6,12 +12,6 @@ use riscv::register::{
     ustatus::{self, Ustatus},
     utval, utvec,
 };
-
-use crate::{
-    hart_id,
-    sbi::{self, set_timer},
-};
-use core::sync::atomic::Ordering::Relaxed;
 
 #[repr(C)]
 pub struct TrapContext {

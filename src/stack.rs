@@ -27,6 +27,7 @@ impl UserStack {
     pub fn get_sp(&self) -> usize {
         self.data.as_ptr() as usize + USER_STACK_SIZE
     }
+    #[allow(unused)]
     pub fn push_context(&self, cx: UserTrapContext) -> &'static mut UserTrapContext {
         let cx_ptr =
             (self.get_sp() - core::mem::size_of::<UserTrapContext>()) as *mut UserTrapContext;
