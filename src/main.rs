@@ -15,6 +15,7 @@ use crate::{
     sbi::{send_ipi, set_timer},
     user_uart::{get_base_addr_from_irq, BufferedSerial, PollingSerial},
 };
+use blake3::Hasher;
 use core::sync::atomic::{AtomicBool, Ordering::Relaxed};
 use embedded_hal::{prelude::_embedded_hal_serial_Write, serial::Read};
 use riscv::register::{sideleg, sie, sip, sstatus, time, uie, uip, ustatus};
@@ -221,16 +222,21 @@ fn uart_speed_test_multihart(hart_id: usize) {
     let mut uart1 = PollingSerial::new(get_base_addr_from_irq(6 + hart_id as u16));
 
     uart1.hardware_init(BAUD_RATE);
+    let mut hasher = Hasher::new();
     IS_TIMEOUT.store(false, Relaxed);
     let t = time::read();
     set_timer(t + CLOCK_FREQ);
 
     while !IS_TIMEOUT.load(Relaxed) {
         for _ in 0..14 {
-            let _ = uart1.try_write(0x55);
+            if let Ok(()) = uart1.try_write(0x55) {
+                hasher.update(&[0x55]);
+            }
         }
         for _ in 0..14 {
-            let _ = uart1.try_read();
+            if let Ok(ch) = uart1.try_read() {
+                hasher.update(&[ch]);
+            }
         }
     }
     if hart_id == 1 {
@@ -251,6 +257,7 @@ fn uart_speed_test_multihart_intr(hart_id: usize, mode: char) {
 
     let mut uart1 = BufferedSerial::new(get_base_addr_from_irq(irq));
     uart1.hardware_init(BAUD_RATE);
+    let mut hasher = Hasher::new();
     Plic::enable(context, irq);
     IS_TIMEOUT.store(false, Relaxed);
     let t = time::read();
@@ -268,10 +275,14 @@ fn uart_speed_test_multihart_intr(hart_id: usize, mode: char) {
     }
     while !IS_TIMEOUT.load(Relaxed) {
         for _ in 0..14 {
-            let _ = uart1.try_write(0x55);
+            if let Ok(()) = uart1.try_write(0x55) {
+                hasher.update(&[0x55]);
+            }
         }
         for _ in 0..14 {
-            let _ = uart1.try_read();
+            if let Ok(ch) = uart1.try_read() {
+                hasher.update(&[ch]);
+            }
         }
         if HAS_INTR[hart_id].load(Relaxed) {
             uart1.interrupt_handler();
