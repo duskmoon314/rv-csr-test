@@ -53,7 +53,7 @@ pub fn init_hart(hart_id: usize) {
 
 pub fn handle_external_interrupt(hart_id: usize, mode: char) {
     let context = get_context(hart_id, mode);
-    while let Some(irq) = Plic::claim(context) {
+    while let Some(_irq) = Plic::claim(context) {
         // debug!("[PLIC] IRQ: {:?}", irq);
         HAS_INTR[hart_id].store(true, Relaxed);
         // Plic::complete(context, irq)
