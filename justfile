@@ -12,6 +12,12 @@ KERNEL_ASM := BUILD_PATH + "rv-csr-test.asm"
 KERNEL_BIN := BUILD_PATH + "rv-csr-test.bin"
 KERNEL_LRV_BIN := BUILD_PATH + "rcore-n.bin"
 
+env:
+	(rustup target list | grep "{{TARGET}} (installed)") || rustup target add {{TARGET}}
+	cargo install cargo-binutils --vers ~0.2
+	rustup component add rust-src
+	rustup component add llvm-tools-preview
+
 build:
     cp src/linker-qemu.ld src/linker.ld
     cargo build --features "board_qemu" --release
