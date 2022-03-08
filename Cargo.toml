@@ -20,6 +20,7 @@ nb = "1.0.0"
 spin = "0.9"
 lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
 blake3 = { version = "1.2.0", default-features = false }
+array-init = "2.0.0"
 
 [features]
 board_lrv = ["uart_xilinx"]

@@ -18,6 +18,7 @@ use crate::{
 use blake3::Hasher;
 use core::sync::atomic::{AtomicBool, Ordering::Relaxed};
 use embedded_hal::{prelude::_embedded_hal_serial_Write, serial::Read};
+use lazy_static::*;
 use riscv::register::{sideleg, sie, sip, sstatus, time, uie, uip, ustatus};
 #[cfg(feature = "board_lrv")]
 use uart_xilinx::uart_lite::MmioUartAxiLite;
@@ -36,7 +37,10 @@ mod user_uart;
 
 static IS_TIMEOUT: AtomicBool = AtomicBool::new(false);
 static IS_HART1_INIT: AtomicBool = AtomicBool::new(false);
-pub static HAS_INTR: [AtomicBool; CPU_NUM] = [AtomicBool::new(false), AtomicBool::new(false)];
+lazy_static! {
+    pub static ref HAS_INTR: [AtomicBool; CPU_NUM] =
+        array_init::array_init(|_| AtomicBool::new(false));
+}
 pub const BAUD_RATE: usize = 6_250_000;
 
 global_asm!(include_str!("entry.asm"));
@@ -72,24 +76,30 @@ pub fn rust_main(hart_id: usize) -> ! {
         plic::init();
         println!("logger init finished");
         info!("{:#x?}", ustatus::read());
+        // unsafe { asm!("csrwi 0x800, 1") }
         mm::init_heap();
         for i in 1..CPU_NUM {
             debug!("Start {}", i);
             let mask: usize = 1 << i;
             send_ipi(&mask as *const _ as usize);
         }
-        while !IS_HART1_INIT.load(Relaxed) {}
+        if CPU_NUM > 1 {
+            while !IS_HART1_INIT.load(Relaxed) {}
+        }
     } else {
         info!("Hart booted");
         IS_HART1_INIT.store(true, Relaxed);
     }
 
-    uart_speed_test_multihart(hart_id);
-    info!("polling mode test finished");
-    delay(1000);
-    uart_speed_test_multihart_intr(hart_id, 'S');
-    info!("interrupt mode test finished");
-    delay(1000);
+    info!("Tests begin!");
+    uart_lite_test_multihart_intr(hart_id, 'S');
+    // unsafe { asm!("csrwi 0x800, 1") }
+    // uart_speed_test_multihart(hart_id);
+    // info!("polling mode test finished");
+    // delay(1000);
+    // uart_speed_test_multihart_intr(hart_id, 'S');
+    // info!("interrupt mode test finished");
+    // delay(1000);
     unsafe {
         sip::set_ssoft();
         sip::set_usoft();
@@ -158,7 +168,8 @@ pub fn rust_main(hart_id: usize) -> ! {
     }
 
     info!("user mode");
-    uart_speed_test_multihart_intr(hart_id, 'U');
+    // uart_speed_test_multihart_intr(hart_id, 'U');
+    uart_lite_test_multihart_intr(hart_id, 'U');
     delay(1000);
     panic!("Shutdown machine!");
 }
@@ -176,6 +187,46 @@ fn uart_lite_test() {
     for _ in 0..1000_000 {}
     info!("uart0 status: {:#x?}", uart.status());
     plic::handle_external_interrupt(0, 'S');
+}
+
+#[cfg(feature = "board_lrv")]
+#[allow(unused)]
+fn uart_lite_test_multihart_intr(hart_id: usize, mode: char) {
+    plic::init_hart(hart_id);
+    let context = plic::get_context(hart_id, mode);
+    let irq = 4 + hart_id as u16;
+    let uart = MmioUartAxiLite::new(get_base_addr_from_irq(irq));
+    Plic::enable(context, irq);
+    Plic::complete(context, irq);
+    // unsafe { asm!("csrwi 0x800, 1") }
+    uart.enable_interrupt();
+    match mode {
+        'S' => unsafe {
+            sie::set_sext();
+        },
+        'U' => unsafe {
+            uie::set_uext();
+        },
+        _ => {
+            error!("{} mode not supported!", mode);
+        }
+    }
+    for i in 0..64 {
+        uart.write_byte(i as u8 + 'A' as u8);
+    }
+    info!("uart{} status: {:#x?}", hart_id, uart.status());
+    for _ in 0..1000_000 {}
+    info!("uart{} status: {:#x?}", hart_id, uart.status());
+    match mode {
+        'S' => info!("sip: {:#x?}", sip::read()),
+        'U' => info!("uip: {:#x?}", uip::read()),
+        _ => {
+            error!("{} mode not supported!", mode);
+        }
+    }
+    Plic::complete(context, irq);
+
+    // plic::handle_external_interrupt(hart_id, mode);
 }
 
 #[allow(unused)]
@@ -214,6 +265,7 @@ fn delay(ms: usize) {
     while time::read() - start < CLOCK_FREQ * ms / 1000 {}
 }
 
+#[allow(unused)]
 fn uart_speed_test_multihart(hart_id: usize) {
     #[cfg(feature = "board_qemu")]
     let mut uart1 = PollingSerial::new(get_base_addr_from_irq(14 + hart_id as u16));
@@ -245,6 +297,7 @@ fn uart_speed_test_multihart(hart_id: usize) {
     info!("uart rx {}, tx {}", uart1.rx_count, uart1.tx_count);
 }
 
+#[allow(unused)]
 fn uart_speed_test_multihart_intr(hart_id: usize, mode: char) {
     plic::init_hart(hart_id);
     let context = plic::get_context(hart_id, mode);
