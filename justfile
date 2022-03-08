@@ -32,10 +32,10 @@ build_lrv:
     rm src/linker.ld
 
 disasm: build
-    {{OBJDUMP}} -S {{KERNEL_ELF}} > {{KERNEL_ASM}}
+    {{OBJDUMP}} -d -h -S {{KERNEL_ELF}} > {{KERNEL_ASM}}
 
 disasm_lrv: build_lrv
-    {{OBJDUMP}} -S {{KERNEL_ELF}} > {{KERNEL_ASM}}
+    {{OBJDUMP}} -d -h -S {{KERNEL_ELF}} > {{KERNEL_ASM}}
 
 run: build
     {{QEMU}} -machine virt -smp 4 {{SERIAL_FLAGS}} -nographic -bios ./rustsbi-qemu.bin -device loader,file={{KERNEL_BIN}},addr=0x80200000 -d int -D debug.log
