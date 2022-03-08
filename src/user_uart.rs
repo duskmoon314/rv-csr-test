@@ -3,8 +3,8 @@ use core::convert::Infallible;
 use embedded_hal::serial::{Read, Write};
 pub use serial_config::*;
 
-pub const DEFAULT_TX_BUFFER_SIZE: usize = 1000;
-pub const DEFAULT_RX_BUFFER_SIZE: usize = 1000;
+pub const DEFAULT_TX_BUFFER_SIZE: usize = 100;
+pub const DEFAULT_RX_BUFFER_SIZE: usize = 100;
 
 #[cfg(feature = "board_qemu")]
 mod serial_config {
