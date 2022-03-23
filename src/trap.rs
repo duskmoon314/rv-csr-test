@@ -97,7 +97,7 @@ pub fn trap_handler(cx: &mut TrapContext) -> &mut TrapContext {
             }
         }
         scause::Trap::Interrupt(scause::Interrupt::SupervisorExternal) => {
-            debug!("SEI");
+            // debug!("SEI");
             crate::plic::handle_external_interrupt(hart_id(), 'S');
         }
         scause::Trap::Interrupt(scause::Interrupt::SupervisorTimer) => {
@@ -130,7 +130,7 @@ pub fn user_trap_handler(cx: &mut UserTrapContext) -> &mut UserTrapContext {
             }
         }
         ucause::Trap::Interrupt(ucause::Interrupt::UserExternal) => {
-            debug!("UEI");
+            // debug!("UEI");
             crate::plic::handle_external_interrupt(hart_id(), 'U');
         }
         _ => {

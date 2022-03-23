@@ -197,6 +197,7 @@ fn uart_lite_test_multihart_intr(hart_id: usize, mode: char) {
     let irq = 4 + hart_id as u16;
     let uart = MmioUartAxiLite::new(get_base_addr_from_irq(irq));
     Plic::enable(context, irq);
+    Plic::claim(context);
     Plic::complete(context, irq);
     // unsafe { asm!("csrwi 0x800, 1") }
     uart.enable_interrupt();
@@ -211,12 +212,13 @@ fn uart_lite_test_multihart_intr(hart_id: usize, mode: char) {
             error!("{} mode not supported!", mode);
         }
     }
-    for i in 0..64 {
+    for i in 0..16 {
         uart.write_byte(i as u8 + 'A' as u8);
     }
     info!("uart{} status: {:#x?}", hart_id, uart.status());
     for _ in 0..1000_000 {}
     info!("uart{} status: {:#x?}", hart_id, uart.status());
+    for _ in 0..1000_000 {}
     match mode {
         'S' => info!("sip: {:#x?}", sip::read()),
         'U' => info!("uip: {:#x?}", uip::read()),
@@ -224,7 +226,10 @@ fn uart_lite_test_multihart_intr(hart_id: usize, mode: char) {
             error!("{} mode not supported!", mode);
         }
     }
+    uart.disable_interrupt();
+    Plic::claim(context);
     Plic::complete(context, irq);
+    Plic::disable(context, irq);
 
     // plic::handle_external_interrupt(hart_id, mode);
 }
