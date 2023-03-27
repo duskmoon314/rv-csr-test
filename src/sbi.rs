@@ -22,7 +22,7 @@ pub fn sbi_call(which: usize, arg0: usize, arg1: usize, arg2: usize) -> usize {
 }
 
 pub fn set_timer(timer: usize) {
-    sbi_call(SBI_SET_TIMER, timer, 0, 0);
+    sbi_rt::set_timer(timer as _);
 }
 
 pub fn console_putchar(c: usize) {

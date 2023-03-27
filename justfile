@@ -1,5 +1,6 @@
-QEMU := "../qemu-build/riscv64-softmmu/qemu-system-riscv64"
-SERIAL_FLAGS := "-serial /dev/pts/4 -serial /dev/null -serial /dev/null -serial tcp::23334,server,nowait -serial tcp:localhost:23334"
+QEMU := "../../uintr/qemu-build/riscv64-softmmu/qemu-system-riscv64"
+BIOS_BIN := "./opensbi_fw_dynamic.bin"
+SERIAL_FLAGS := "-serial /dev/pts/80 -serial /dev/null -serial /dev/null -serial tcp::23334,server,nowait -serial tcp:localhost:23334"\
 # SERIAL_FLAGS := "-serial /dev/pts/1 -serial /dev/null -serial /dev/null -serial /dev/null -serial /dev/null"
 TARGET := "riscv64imac-unknown-none-elf"
 MODE := "release"
@@ -31,6 +32,9 @@ build_lrv:
     cp -f {{KERNEL_BIN}} {{KERNEL_LRV_BIN}}
     rm src/linker.ld
 
+clean:
+    cargo clean
+
 disasm: build
     {{OBJDUMP}} -d -h -S {{KERNEL_ELF}} > {{KERNEL_ASM}}
 
@@ -38,7 +42,7 @@ disasm_lrv: build_lrv
     {{OBJDUMP}} -d -h -S {{KERNEL_ELF}} > {{KERNEL_ASM}}
 
 run: build
-    {{QEMU}} -machine virt -smp 4 {{SERIAL_FLAGS}} -nographic -bios ./rustsbi-qemu.bin -device loader,file={{KERNEL_BIN}},addr=0x80200000 -d int -D debug.log
+    {{QEMU}} -machine virt -smp 2 {{SERIAL_FLAGS}} -nographic -bios {{BIOS_BIN}} -kernel {{KERNEL_ELF}} -d int,guest_errors -D debug.log
 
 debug: build disasm
-    tmux new-session -d "{{QEMU}} -machine virt -smp 4 {{SERIAL_FLAGS}} -nographic -bios ./rustsbi-qemu.bin -device loader,file={{KERNEL_BIN}},addr=0x80200000 -s -S -d int -D debug.log" && tmux split-window -h "riscv64-unknown-elf-gdb -ex 'file {{KERNEL_ELF}}' -ex 'set arch riscv:rv64' -ex 'target remote localhost:1234'" && tmux -2 attach-session -d
+    tmux new-session -d "{{QEMU}} -machine virt -smp 2 {{SERIAL_FLAGS}} -nographic -bios  {{BIOS_BIN}} -kernel {{KERNEL_ELF}} -s -S -d int -D debug.log" && tmux split-window -h "riscv64-unknown-elf-gdb -ex 'file {{KERNEL_ELF}}' -ex 'set arch riscv:rv64' -ex 'target remote localhost:1234'" && tmux -2 attach-session -d

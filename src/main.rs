@@ -2,6 +2,8 @@
 #![no_main]
 #![feature(panic_info_message)]
 #![feature(alloc_error_handler)]
+#![feature(naked_functions)]
+#![feature(asm_const)]
 
 // use console::ANSICON;
 #[macro_use]
@@ -43,7 +45,70 @@ lazy_static! {
 }
 pub const BAUD_RATE: usize = 6_250_000;
 
-global_asm!(include_str!("entry.asm"));
+/// Boot kernel size allocated in `_start` for single CPU.
+pub const BOOT_STACK_SIZE: usize = 0x4_0000;
+
+/// Total boot kernel size.
+pub const TOTAL_BOOT_STACK_SIZE: usize = BOOT_STACK_SIZE * CPU_NUM;
+
+// global_asm!(include_str!("entry.asm"));
+
+/// Initialize kernel stack in .bss section.
+#[link_section = ".bss.stack"]
+static mut STACK: [u8; TOTAL_BOOT_STACK_SIZE] = [0u8; TOTAL_BOOT_STACK_SIZE];
+
+/// Entry for the first kernel.
+#[naked]
+#[no_mangle]
+#[link_section = ".text.entry"]
+unsafe extern "C" fn __entry(hartid: usize) -> ! {
+    core::arch::asm!(
+        // Use tp to save hartid
+        // "ebreak",
+        "mv tp, a0",
+        // Set stack pointer to the kernel stack.
+        "
+        la a1, {stack}
+        li t0, {total_stack_size}
+        li t1, {stack_size}
+        mul sp, a0, t1
+        sub sp, t0, sp
+        add sp, a1, sp
+        ",        // Jump to the main function.
+        "j  {main}",
+        total_stack_size = const TOTAL_BOOT_STACK_SIZE,
+        stack_size       = const BOOT_STACK_SIZE,
+        stack            =   sym STACK,
+        main             =   sym rust_main_init,
+        options(noreturn),
+    )
+}
+
+/// Entry for other kernels.
+#[naked]
+#[no_mangle]
+pub unsafe extern "C" fn __entry_others(hartid: usize) -> ! {
+    core::arch::asm!(
+        // Use tp to save hartid
+        "mv tp, a0",
+        // Set stack pointer to the kernel stack.
+        "
+        la a1, {stack}
+        li t0, {total_stack_size}
+        li t1, {stack_size}
+        mul sp, a0, t1
+        sub sp, t0, sp
+        add sp, a1, sp
+        ",
+        // Jump to the main function.
+        "j  {main}",
+        total_stack_size = const TOTAL_BOOT_STACK_SIZE,
+        stack_size       = const BOOT_STACK_SIZE,
+        stack            =   sym STACK,
+        main             =   sym rust_main_init_other,
+        options(noreturn),
+    )
+}
 
 pub fn hart_id() -> usize {
     let hart_id: usize;
@@ -67,31 +132,45 @@ fn clear_bss() {
 }
 
 #[no_mangle]
-pub fn rust_main(hart_id: usize) -> ! {
+pub fn rust_main_init(hart_id: usize) {
     trap::init();
-    if hart_id == 0 {
-        clear_bss();
-        println!("Hello rv-csr-test");
-        logger::init();
-        plic::init();
-        println!("logger init finished");
-        info!("{:#x?}", ustatus::read());
-        // unsafe { asm!("csrwi 0x800, 1") }
-        mm::init_heap();
-        for i in 1..CPU_NUM {
-            debug!("Start {}", i);
-            let mask: usize = 1 << i;
-            send_ipi(&mask as *const _ as usize);
-        }
-        if CPU_NUM > 1 {
-            while !IS_HART1_INIT.load(Relaxed) {}
-        }
-    } else {
-        info!("Hart booted");
-        IS_HART1_INIT.store(true, Relaxed);
-    }
+    clear_bss();
+    println!("Hello rv-csr-test");
+    logger::init();
+    println!("logger init finished");
+    plic::init();
+    info!("{:#x?}", ustatus::read());
+    // unsafe { asm!("csrwi 0x800, 1") }
+    mm::init_heap();
+    if CPU_NUM > 1 {
+        for i in 0..CPU_NUM {
+            if i != hart_id {
+                debug!("Start {}", i);
+                // let mask: usize = 1 << i;
+                // send_ipi(&mask as *const _ as usize);
 
+                // Starts other harts.
+                let ret = sbi_rt::hart_start(i, __entry_others as _, 0);
+                assert!(ret.is_ok(), "Failed to shart hart {}", i);
+            }
+        }
+        while !IS_HART1_INIT.load(Relaxed) {}
+    }
+    rust_main(hart_id)
+}
+
+#[no_mangle]
+pub fn rust_main_init_other(hart_id: usize) {
+    trap::init();
+    info!("Hart {} booted", hart_id);
+    IS_HART1_INIT.store(true, Relaxed);
+    rust_main(hart_id)
+}
+
+#[no_mangle]
+pub fn rust_main(hart_id: usize) -> ! {
     info!("Tests begin!");
+    #[cfg(feature = "board_lrv")]
     uart_lite_test_multihart_intr(hart_id, 'S');
     // unsafe { asm!("csrwi 0x800, 1") }
     // uart_speed_test_multihart(hart_id);
@@ -112,6 +191,7 @@ pub fn rust_main(hart_id: usize) -> ! {
 
     unsafe {
         sstatus::clear_sie();
+        sstatus::set_spp(sstatus::SPP::User);
         sideleg::set_usoft();
         sideleg::set_uext();
         asm!("csrr zero, sideleg");
@@ -140,11 +220,11 @@ pub fn rust_main(hart_id: usize) -> ! {
     let ctx = stack::KERNEL_STACK[hart_id].push_ucontext(trap::UserTrapContext::init(entry, sp, s));
 
     extern "C" {
-        fn __restore_u(cx_addr: usize);
+        fn __restore_u_from_s(cx_addr: usize);
     }
 
     unsafe {
-        __restore_u(ctx as *const _ as usize);
+        __restore_u_from_s(ctx as *const _ as usize);
     }
 
     unsafe {
@@ -168,9 +248,11 @@ pub fn rust_main(hart_id: usize) -> ! {
     }
 
     info!("user mode");
-    // uart_speed_test_multihart_intr(hart_id, 'U');
+    uart_speed_test_multihart_intr(hart_id, 'U');
+    #[cfg(feature = "board_lrv")]
     uart_lite_test_multihart_intr(hart_id, 'U');
-    delay(1000);
+    info!("test fin, waiting to shutdown...");
+    delay(5000);
     panic!("Shutdown machine!");
 }
 
@@ -272,6 +354,7 @@ fn delay(ms: usize) {
 
 #[allow(unused)]
 fn uart_speed_test_multihart(hart_id: usize) {
+    info!("uart_speed_test_multihart");
     #[cfg(feature = "board_qemu")]
     let mut uart1 = PollingSerial::new(get_base_addr_from_irq(14 + hart_id as u16));
 
@@ -284,10 +367,12 @@ fn uart_speed_test_multihart(hart_id: usize) {
     let t = time::read();
     set_timer(t + CLOCK_FREQ);
 
+    let tx: u8 = 0;
     while !IS_TIMEOUT.load(Relaxed) {
         for _ in 0..14 {
-            if let Ok(()) = uart1.try_write(0x55) {
-                hasher.update(&[0x55]);
+            if let Ok(()) = uart1.try_write(tx) {
+                hasher.update(&[tx]);
+                tx.wrapping_add(1);
             }
         }
         for _ in 0..14 {
@@ -304,6 +389,7 @@ fn uart_speed_test_multihart(hart_id: usize) {
 
 #[allow(unused)]
 fn uart_speed_test_multihart_intr(hart_id: usize, mode: char) {
+    info!("uart_speed_test_multihart_intr");
     plic::init_hart(hart_id);
     let context = plic::get_context(hart_id, mode);
 

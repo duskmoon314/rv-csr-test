@@ -10,6 +10,7 @@
     .globl __restore
     .globl __alltraps_u
     .globl __restore_u
+    .globl __restore_u_from_s
     .align 2
 __alltraps:
     csrw sscratch, sp
@@ -86,3 +87,22 @@ __restore_u:
     addi sp, sp, 34*8
     csrr sp, uscratch
     uret
+
+__restore_u_from_s:
+    mv sp, a0
+    ld t0, 32*8(sp)
+    ld t1, 33*8(sp)
+    ld t2, 2*8(sp)
+    csrw ustatus, t0
+    csrw sepc, t1
+    csrw uscratch, t2
+    ld x1, 1*8(sp)
+    ld x3, 3*8(sp)
+    .set n, 5
+    .rept 27
+        LOAD_GP %n
+        .set n, n+1
+    .endr
+    addi sp, sp, 34*8
+    csrr sp, uscratch
+    sret

@@ -14,13 +14,14 @@ riscv = { git = "https://github.com/duskmoon314/riscv.git", branch = "extN", fea
 ] }
 rv-plic = { git = "https://github.com/duskmoon314/rv-plic" }
 uart_xilinx = { version = "*", features = ["fmt"], optional = true }
-uart8250 = { version = "*", features = ["fmt"], optional = true }
+uart8250 = { version = "0.5.0", features = ["fmt"], optional = true }
 embedded-hal = "=1.0.0-alpha.4"
 nb = "1.0.0"
 spin = "0.9"
 lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
 blake3 = { version = "1.2.0", default-features = false }
 array-init = "2.0.0"
+sbi-rt = { version = "0.0.2", features = ["legacy"] }
 
 [features]
 board_lrv = ["uart_xilinx"]
