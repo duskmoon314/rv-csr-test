@@ -1,6 +1,6 @@
 QEMU := "../../uintr/qemu-build/riscv64-softmmu/qemu-system-riscv64"
 BIOS_BIN := "./opensbi_fw_dynamic.bin"
-SERIAL_FLAGS := "-serial /dev/pts/80 -serial /dev/null -serial /dev/null -serial tcp::23334,server,nowait -serial tcp:localhost:23334"\
+SERIAL_FLAGS := "-serial /dev/pts/80 -serial /dev/null -serial /dev/null -serial tcp::23334,server,nowait -serial tcp:localhost:23334"
 # SERIAL_FLAGS := "-serial /dev/pts/1 -serial /dev/null -serial /dev/null -serial /dev/null -serial /dev/null"
 TARGET := "riscv64imac-unknown-none-elf"
 MODE := "release"
@@ -12,6 +12,7 @@ KERNEL_ELF := BUILD_PATH + "rv-csr-test"
 KERNEL_ASM := BUILD_PATH + "rv-csr-test.asm"
 KERNEL_BIN := BUILD_PATH + "rv-csr-test.bin"
 KERNEL_LRV_BIN := BUILD_PATH + "rcore-n.bin"
+OUTPUT_BIN := "rv-csr-test.bin"
 
 env:
 	(rustup target list | grep "{{TARGET}} (installed)") || rustup target add {{TARGET}}
@@ -30,6 +31,7 @@ build_lrv:
     cargo build --features "board_lrv" --release
     {{OBJCOPY}} -O binary {{KERNEL_ELF}} {{KERNEL_BIN}}
     cp -f {{KERNEL_BIN}} {{KERNEL_LRV_BIN}}
+    cp -f {{KERNEL_BIN}} {{OUTPUT_BIN}}
     rm src/linker.ld
 
 clean:

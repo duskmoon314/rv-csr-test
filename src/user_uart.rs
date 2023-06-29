@@ -30,9 +30,9 @@ mod serial_config {
     pub use uart_xilinx::uart_16550::{uart::LSR, InterruptType, MmioUartAxi16550};
     pub type SerialHardware = MmioUartAxi16550<'static>;
     pub const FIFO_DEPTH: usize = 16;
-    pub const SERIAL_NUM: usize = 4;
-    pub const SERIAL_BASE_ADDRESS: usize = 0x6000_1000;
-    pub const SERIAL_ADDRESS_STRIDE: usize = 0x1000;
+    pub const SERIAL_NUM: usize = 2;
+    pub const SERIAL_BASE_ADDRESS: usize = 0x6002_0000;
+    pub const SERIAL_ADDRESS_STRIDE: usize = 0x1_0000;
     pub fn irq_to_serial_id(irq: u16) -> usize {
         match irq {
             4 => 0,

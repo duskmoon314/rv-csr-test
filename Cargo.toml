@@ -22,6 +22,7 @@ lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
 blake3 = { version = "1.2.0", default-features = false }
 array-init = "2.0.0"
 sbi-rt = { version = "0.0.2", features = ["legacy"] }
+volatile-register = "0.2.1"
 
 [features]
 board_lrv = ["uart_xilinx"]

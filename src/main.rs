@@ -12,7 +12,7 @@ extern crate alloc;
 use core::arch::{asm, global_asm};
 
 use crate::{
-    config::{CLOCK_FREQ, CPU_NUM},
+    config::{CLOCK_FREQ, CPU_NUM, TRIGGER_GPIO_BASE},
     plic::Plic,
     sbi::{send_ipi, set_timer},
     user_uart::{get_base_addr_from_irq, BufferedSerial, PollingSerial},
@@ -50,6 +50,11 @@ pub const BOOT_STACK_SIZE: usize = 0x4_0000;
 
 /// Total boot kernel size.
 pub const TOTAL_BOOT_STACK_SIZE: usize = BOOT_STACK_SIZE * CPU_NUM;
+
+fn gpio_write(base: usize, val: u32) {
+    let gpio = base as *const volatile_register::RW<u32>;
+    unsafe { (*gpio).write(val) }
+}
 
 // global_asm!(include_str!("entry.asm"));
 
@@ -138,6 +143,7 @@ pub fn rust_main_init(hart_id: usize) {
     println!("Hello rv-csr-test");
     logger::init();
     println!("logger init finished");
+    gpio_write(TRIGGER_GPIO_BASE, 0);
     plic::init();
     info!("{:#x?}", ustatus::read());
     // unsafe { asm!("csrwi 0x800, 1") }
@@ -171,7 +177,8 @@ pub fn rust_main_init_other(hart_id: usize) {
 pub fn rust_main(hart_id: usize) -> ! {
     info!("Tests begin!");
     #[cfg(feature = "board_lrv")]
-    uart_lite_test_multihart_intr(hart_id, 'S');
+    plic_gpio_trigger_test(hart_id, 'S');
+    // uart_lite_test_multihart_intr(hart_id, 'S');
     // unsafe { asm!("csrwi 0x800, 1") }
     // uart_speed_test_multihart(hart_id);
     // info!("polling mode test finished");
@@ -179,6 +186,7 @@ pub fn rust_main(hart_id: usize) -> ! {
     // uart_speed_test_multihart_intr(hart_id, 'S');
     // info!("interrupt mode test finished");
     // delay(1000);
+
     unsafe {
         sip::set_ssoft();
         sip::set_usoft();
@@ -250,10 +258,42 @@ pub fn rust_main(hart_id: usize) -> ! {
     info!("user mode");
     uart_speed_test_multihart_intr(hart_id, 'U');
     #[cfg(feature = "board_lrv")]
-    uart_lite_test_multihart_intr(hart_id, 'U');
+    plic_gpio_trigger_test(hart_id, 'U');
+
+    // uart_lite_test_multihart_intr(hart_id, 'U');
     info!("test fin, waiting to shutdown...");
     delay(5000);
     panic!("Shutdown machine!");
+}
+
+#[allow(unused)]
+fn plic_gpio_trigger_test(hart_id: usize, mode: char) {
+    info!("gpio_trigger_test");
+    plic::init_hart(hart_id);
+    let context = plic::get_context(hart_id, mode);
+    let irq = 6;
+    gpio_write(TRIGGER_GPIO_BASE, 0xffff_ffff);
+    IS_TIMEOUT.store(false, Relaxed);
+    let t = time::read();
+    set_timer(t + CLOCK_FREQ);
+    let mut intr_cnt = 0;
+    Plic::enable(context, irq);
+
+    while !IS_TIMEOUT.load(Relaxed) {
+        if HAS_INTR[hart_id].load(Relaxed) {
+            gpio_write(TRIGGER_GPIO_BASE, 0);
+            HAS_INTR[hart_id].store(false, Relaxed);
+            Plic::complete(context, irq);
+            intr_cnt += 1;
+            info!("new gpio intr! cnt: {}", intr_cnt);
+            delay(100);
+            gpio_write(TRIGGER_GPIO_BASE, 0xffff_ffff);
+        }
+    }
+    gpio_write(TRIGGER_GPIO_BASE, 0);
+    HAS_INTR[hart_id].store(false, Relaxed);
+    Plic::complete(context, irq);
+    info!("gpio_trigger_test finished.");
 }
 
 #[cfg(feature = "board_lrv")]
@@ -324,9 +364,9 @@ fn uart_speed_test() {
     let mut uart2 = PollingSerial::new(get_base_addr_from_irq(15));
 
     #[cfg(feature = "board_lrv")]
-    let mut uart1 = PollingSerial::new(get_base_addr_from_irq(6));
+    let mut uart1 = PollingSerial::new(get_base_addr_from_irq(4));
     #[cfg(feature = "board_lrv")]
-    let mut uart2 = PollingSerial::new(get_base_addr_from_irq(7));
+    let mut uart2 = PollingSerial::new(get_base_addr_from_irq(5));
 
     uart1.hardware_init(BAUD_RATE);
     uart2.hardware_init(BAUD_RATE);
@@ -359,7 +399,7 @@ fn uart_speed_test_multihart(hart_id: usize) {
     let mut uart1 = PollingSerial::new(get_base_addr_from_irq(14 + hart_id as u16));
 
     #[cfg(feature = "board_lrv")]
-    let mut uart1 = PollingSerial::new(get_base_addr_from_irq(6 + hart_id as u16));
+    let mut uart1 = PollingSerial::new(get_base_addr_from_irq(4 + hart_id as u16));
 
     uart1.hardware_init(BAUD_RATE);
     let mut hasher = Hasher::new();

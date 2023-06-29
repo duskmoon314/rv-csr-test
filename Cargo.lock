@@ -216,6 +216,7 @@ dependencies = [
  "spin 0.9.6",
  "uart8250",
  "uart_xilinx",
+ "volatile-register",
 ]
 
 [[package]]
