@@ -30,8 +30,12 @@ pub fn init() {
 
 #[cfg(feature = "board_lrv")]
 pub fn init() {
+    Plic::set_priority(1, Priority::lowest());
+    Plic::set_priority(2, Priority::lowest());
+    Plic::set_priority(3, Priority::lowest());
     Plic::set_priority(4, Priority::lowest());
     Plic::set_priority(5, Priority::lowest());
+    Plic::set_priority(6, Priority::lowest());
 }
 
 #[cfg(feature = "board_qemu")]
@@ -45,8 +49,8 @@ pub fn init_hart(hart_id: usize) {
 pub fn init_hart(hart_id: usize) {
     let context = get_context(hart_id, 'S');
     Plic::clear_enable(context, 0);
+    Plic::set_threshold(context, Priority::any());
     Plic::clear_enable(get_context(hart_id, 'U'), 0);
-    Plic::enable(context, 4 + hart_id as u16);
     Plic::set_threshold(context, Priority::any());
     Plic::set_threshold(get_context(hart_id, 'M'), Priority::never());
 }

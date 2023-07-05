@@ -56,9 +56,7 @@ pub fn init() {
     unsafe {
         stvec::write(__alltraps as usize, TrapMode::Direct);
         asm!("csrr zero, sideleg");
-        asm!("csrr zero, sedeleg");
         asm!("csrwi sideleg, 0");
-        asm!("csrwi sedeleg, 0");
         sstatus::set_sie();
         sie::set_ssoft();
         sie::set_stimer();
@@ -72,6 +70,7 @@ pub fn init_u() {
     }
     unsafe {
         utvec::write(__alltraps_u as usize, TrapMode::Direct);
+        ustatus::set_uie();
     }
 }
 

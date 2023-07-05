@@ -9,7 +9,7 @@
 #[macro_use]
 extern crate log;
 extern crate alloc;
-use core::arch::{asm, global_asm};
+use core::arch::asm;
 
 use crate::{
     config::{CLOCK_FREQ, CPU_NUM, TRIGGER_GPIO_BASE},
@@ -203,7 +203,6 @@ pub fn rust_main(hart_id: usize) -> ! {
         sideleg::set_usoft();
         sideleg::set_uext();
         asm!("csrr zero, sideleg");
-        asm!("csrr zero, sedeleg");
     }
 
     let sp: usize = stack::USER_STACK[hart_id].get_sp();
@@ -256,7 +255,9 @@ pub fn rust_main(hart_id: usize) -> ! {
     }
 
     info!("user mode");
-    uart_speed_test_multihart_intr(hart_id, 'U');
+    info!("{:#x?}", ustatus::read());
+
+    // uart_speed_test_multihart_intr(hart_id, 'U');
     #[cfg(feature = "board_lrv")]
     plic_gpio_trigger_test(hart_id, 'U');
 
@@ -268,7 +269,7 @@ pub fn rust_main(hart_id: usize) -> ! {
 
 #[allow(unused)]
 fn plic_gpio_trigger_test(hart_id: usize, mode: char) {
-    info!("gpio_trigger_test");
+    info!("gpio_trigger_test in {} mode", mode);
     plic::init_hart(hart_id);
     let context = plic::get_context(hart_id, mode);
     let irq = 6;
@@ -278,6 +279,18 @@ fn plic_gpio_trigger_test(hart_id: usize, mode: char) {
     set_timer(t + CLOCK_FREQ);
     let mut intr_cnt = 0;
     Plic::enable(context, irq);
+
+    match mode {
+        'S' => unsafe {
+            sie::set_sext();
+        },
+        'U' => unsafe {
+            uie::set_uext();
+        },
+        _ => {
+            error!("{} mode not supported!", mode);
+        }
+    }
 
     while !IS_TIMEOUT.load(Relaxed) {
         if HAS_INTR[hart_id].load(Relaxed) {
@@ -292,7 +305,9 @@ fn plic_gpio_trigger_test(hart_id: usize, mode: char) {
     }
     gpio_write(TRIGGER_GPIO_BASE, 0);
     HAS_INTR[hart_id].store(false, Relaxed);
+    Plic::claim(context);
     Plic::complete(context, irq);
+    Plic::disable(context, irq);
     info!("gpio_trigger_test finished.");
 }
 
