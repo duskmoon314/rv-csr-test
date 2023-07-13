@@ -36,6 +36,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
+name = "axidma-pac"
+version = "0.1.0"
+dependencies = [
+ "bare-metal",
+ "riscv 0.10.1",
+ "vcell",
+]
+
+[[package]]
 name = "bare-metal"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -92,6 +101,12 @@ name = "constant_time_eq"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13418e745008f7349ec7e449155f419a61b92b58a99cc3616942b926825ec76b"
+
+[[package]]
+name = "critical-section"
+version = "1.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6548a0ad5d2549e111e1f6a11a6c2e2d00ce6a3dafe22948d67c2b443f775e52"
 
 [[package]]
 name = "embedded-hal"
@@ -190,6 +205,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "riscv"
+version = "0.10.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aa3145d2fae3778b1e31ec2e827b228bdc6abd9b74bb5705ba46dcb82069bc4f"
+dependencies = [
+ "bit_field",
+ "critical-section",
+ "embedded-hal 0.2.7",
+]
+
+[[package]]
 name = "riscv-target"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -204,19 +230,21 @@ name = "rv-csr-test"
 version = "0.1.0"
 dependencies = [
  "array-init",
+ "axidma-pac",
  "blake3",
  "buddy_system_allocator",
  "embedded-hal 1.0.0-alpha.4",
  "lazy_static",
  "log",
  "nb 1.1.0",
- "riscv",
+ "riscv 0.7.0",
  "rv-plic",
  "sbi-rt",
  "spin 0.9.6",
  "uart8250",
  "uart_xilinx",
  "volatile-register",
+ "xxv-pac",
 ]
 
 [[package]]
@@ -316,5 +344,14 @@ version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ee8f19f9d74293faf70901bc20ad067dc1ad390d2cbf1e3f75f721ffee908b6"
 dependencies = [
+ "vcell",
+]
+
+[[package]]
+name = "xxv-pac"
+version = "0.1.0"
+dependencies = [
+ "bare-metal",
+ "riscv 0.10.1",
  "vcell",
 ]

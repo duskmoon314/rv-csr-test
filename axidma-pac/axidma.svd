@@ -1,0 +1,1356 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<device schemaVersion="1.3"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+  xs:noNamespaceSchemaLocation="cmsis-svd.xsd">
+  <name>axidma</name>
+  <version>7.1</version>
+  <description>axidma device descript</description>
+
+  <addressUnitBits>8</addressUnitBits>                  <!-- byte addressable memory -->
+  <width>32</width>                                     <!-- bus width is 32 bits -->
+  <size>32</size>                                       <!-- this is the default size (number of bits) of all peripherals
+                                                                       and register that do not define "size" themselves -->
+  <resetValue>0x00000000</resetValue>                   <!-- by default all bits of the registers are initialized to 0
+  on reset -->
+  <resetMask>0xFFFFFFFF</resetMask>                     <!-- by default all 32Bits of the registers are used -->
+
+  <peripherals>
+    <!-- axi_dma_0 -->
+    <peripheral>
+      <name>AXI_DMA</name>
+      <description>AXI Direct Memory Access</description>
+      <baseAddress>0x60100000</baseAddress>     <!-- mmio baseaddr -->
+      <size>32</size>            <!-- default bit-width of any register contained in the device -->
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x10000</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>mm2s_dmacr</name>
+          <description>MM2S DMA Control register</description>
+          <addressOffset>0x0</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>run_stop</name>
+              <description>Run / Stop control for controlling running and stopping of the DMA
+                channel.</description>
+              <bitRange>[0:0]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>STOP</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RUN</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>reset</name>
+              <description>Soft reset for resetting the AXI DMA core</description>
+              <bitRange>[2:2]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NORMAL</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RESET</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>keyhole</name>
+              <description>Keyhole Read</description>
+              <bitRange>[3:3]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>cyclic_buffer_descriptor</name>
+              <description>When set to 1, the DMA operates in Cyclic Buffer Descriptor (BD) mode
+                without any user intervention</description>
+              <bitRange>[4:4]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>ioc_irq_en</name>
+              <description>Interrupt on Complete (IOC) Interrupt Enable</description>
+              <bitRange>[12:12]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dly_irq_en</name>
+              <description>Interrupt on Delay Timer Interrupt Enable</description>
+              <bitRange>[13:13]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>err_irq_en</name>
+              <description>Interrupt on Error Interrupt Enable</description>
+              <bitRange>[14:14]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>irq_threshold</name>
+              <description>Interrupt Threshold</description>
+              <bitRange>[23:16]</bitRange>
+            </field>
+            <field>
+              <name>irq_delay</name>
+              <description>Interrupt Delay Time Out</description>
+              <bitRange>[31:24]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>mm2s_dmasr</name>
+          <description>MM2S DMA Status register</description>
+          <addressOffset>0x4</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>halted</name>
+              <description>DMA Channel Halted. Indicates the run/stop state of the DMA channel.</description>
+              <bitRange>[0:0]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>RUNNING</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>HALTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>idle</name>
+              <description>DMA Channel Idle. Indicates the state of AXI DMA operations.</description>
+              <bitRange>[1:1]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NOT_IDLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>IDLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>sg_incld</name>
+              <description>Scatter Gather Engine Included. DMASR.SGIncld = 1 indicates the Scatter
+                Gather engine is included and the AXI DMA is configured for Scatter Gather mode.</description>
+              <bitRange>[3:3]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>SG_DISABLED</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>SG_ENABLED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_int_err</name>
+              <description>DMA Internal Error. Internal error occurs if the buffer length specified
+                in the fetched descriptor is set to 0.</description>
+              <bitRange>[4:4]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_slv_err</name>
+              <description>DMA Slave Error. This error occurs if the slave read from the Memory Map
+                interface issues a Slave Error.</description>
+              <bitRange>[5:5]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_dec_err</name>
+              <description>DMA Decode Error. This error occurs if the address request points to an
+                invalid address.</description>
+              <bitRange>[6:6]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>sg_int_err</name>
+              <description>Scatter Gather Internal Error. This error occurs if a descriptor with the
+                “Complete bit” already set is fetched.</description>
+              <bitRange>[8:8]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>sg_slv_err</name>
+              <description>Scatter Gather Slave Error. This error occurs if the slave read from on
+                the Memory Map interface issues a Slave error.</description>
+              <bitRange>[9:9]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>sg_dec_err</name>
+              <description>Scatter Gather Decode Error. This error occurs if CURDESC_PTR and/or
+                NXTDESC_PTR points to an invalid address.</description>
+              <bitRange>[10:10]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>ioc_irq</name>
+              <description>Interrupt on Complete (IOC)</description>
+              <bitRange>[12:12]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_INTR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dly_irq</name>
+              <description>Interrupt on Delay Timer</description>
+              <bitRange>[13:13]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_INTR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>err_irq</name>
+              <description>Interrupt on Error</description>
+              <bitRange>[14:14]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_INTR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>irq_threshold_sts</name>
+              <description>Interrupt Threshold Status. Indicates current interrupt threshold value.</description>
+              <bitRange>[23:16]</bitRange>
+            </field>
+            <field>
+              <name>irq_delay_sts</name>
+              <description>Interrupt Delay Time Status. Indicates current interrupt delay time
+                value.</description>
+              <bitRange>[31:24]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>mm2s_curdesc</name>
+          <description>MM2S Current Descriptor Pointer. Lower 32 bits of the address.</description>
+          <addressOffset>0x8</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>curdesc_ptr</name>
+              <description>Indicates the pointer of the current descriptor being worked on.</description>
+              <bitRange>[31:6]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>mm2s_curdesc_msb</name>
+          <description>MM2S Current Descriptor Pointer. Upper 32 bits of the address.</description>
+          <addressOffset>0xc</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>curdesc_ptr</name>
+              <description>Indicates the pointer of the current descriptor being worked on.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>mm2s_taildesc</name>
+          <description>MM2S Tail Descriptor Pointer. Lower 32 bits of the address.</description>
+          <addressOffset>0x10</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>taildesc_ptr</name>
+              <description>Indicates the pause pointer in a descriptor chain.</description>
+              <bitRange>[31:6]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>mm2s_taildesc_msb</name>
+          <description>MM2S Tail Descriptor Pointer. Upper 32 bits of the address.</description>
+          <addressOffset>0x14</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>taildesc_ptr</name>
+              <description>Indicates the pause pointer in a descriptor chain.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>mm2s_sa</name>
+          <description>MM2S Source Address. Lower 32 bits of the address.</description>
+          <addressOffset>0x18</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>src_addr</name>
+              <description>Indicates the source address AXI DMA reads from to transfer data to
+                AXI4-Stream on the MM2S Channel.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>mm2s_sa_msb</name>
+          <description>MM2S Source Address. Upper 32 bits of the address.</description>
+          <addressOffset>0x1c</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>src_addr</name>
+              <description>Indicates the MSB 32 bits of the source address AXI DMA reads from
+                totransfer data to AXI4-Stream on the MM2S Channel.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>mm2s_length</name>
+          <description>MM2S Transfer Length (Bytes)</description>
+          <addressOffset>0x28</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>length</name>
+              <description>Indicates the number of bytes to transfer for the MM2S channel.</description>
+              <bitRange>[25:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>sg_ctl</name>
+          <description>Scatter/Gather User and Cache</description>
+          <addressOffset>0x2c</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>sg_cache</name>
+              <description>Scatter/Gather Cache Control. Values written in this register reflect on
+                the m_axi_sg_arcache and m_axi_sg_awcache signals of the M_AXI_SG interface.</description>
+              <bitRange>[3:0]</bitRange>
+            </field>
+            <field>
+              <name>sg_user</name>
+              <description>Scatter/Gather User Control. Values written in this register reflect on
+                the m_axi_sg_aruser and m_axi_sg_awuser signals of the M_AXI_SG interface.</description>
+              <bitRange>[11:8]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>s2mm_dmacr</name>
+          <description>S2MM DMA Control register</description>
+          <addressOffset>0x30</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>run_stop</name>
+              <description>Run / Stop control for controlling running and stopping of the DMA
+                channel.</description>
+              <bitRange>[0:0]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>STOP</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RUN</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>reset</name>
+              <description>Soft reset for resetting the AXI DMA core</description>
+              <bitRange>[2:2]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NORMAL</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RESET</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>keyhole</name>
+              <description>Keyhole Read</description>
+              <bitRange>[3:3]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>cyclic_buffer_descriptor</name>
+              <description>When set to 1, the DMA operates in Cyclic Buffer Descriptor (BD) mode
+                without any user intervention</description>
+              <bitRange>[4:4]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>ioc_irq_en</name>
+              <description>Interrupt on Complete (IOC) Interrupt Enable</description>
+              <bitRange>[12:12]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dly_irq_en</name>
+              <description>Interrupt on Delay Timer Interrupt Enable</description>
+              <bitRange>[13:13]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>err_irq_en</name>
+              <description>Interrupt on Error Interrupt Enable</description>
+              <bitRange>[14:14]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>irq_threshold</name>
+              <description>Interrupt Threshold</description>
+              <bitRange>[23:16]</bitRange>
+            </field>
+            <field>
+              <name>irq_delay</name>
+              <description>Interrupt Delay Time Out</description>
+              <bitRange>[31:24]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>s2mm_dmasr</name>
+          <description>S2MM DMA Status register</description>
+          <addressOffset>0x34</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>halted</name>
+              <description>DMA Channel Halted. Indicates the run/stop state of the DMA channel.</description>
+              <bitRange>[0:0]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>RUNNING</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>HALTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>idle</name>
+              <description>DMA Channel Idle. Indicates the state of AXI DMA operations.</description>
+              <bitRange>[1:1]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NOT_IDLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>IDLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>sg_incld</name>
+              <description>Scatter Gather Engine Included. DMASR.SGIncld = 1 indicates the Scatter
+                Gather engine is included and the AXI DMA is configured for Scatter Gather mode.</description>
+              <bitRange>[3:3]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>SG_DISABLED</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>SG_ENABLED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_int_err</name>
+              <description>DMA Internal Error. Internal error occurs if the buffer length specified
+                in the fetched descriptor is set to 0.</description>
+              <bitRange>[4:4]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_slv_err</name>
+              <description>DMA Slave Error. This error occurs if the slave read from the Memory Map
+                interface issues a Slave Error.</description>
+              <bitRange>[5:5]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_dec_err</name>
+              <description>DMA Decode Error. This error occurs if the address request points to an
+                invalid address.</description>
+              <bitRange>[6:6]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>sg_int_err</name>
+              <description>Scatter Gather Internal Error. This error occurs if a descriptor with the
+                “Complete bit” already set is fetched.</description>
+              <bitRange>[8:8]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>sg_slv_err</name>
+              <description>Scatter Gather Slave Error. This error occurs if the slave read from on
+                the Memory Map interface issues a Slave error.</description>
+              <bitRange>[9:9]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>sg_dec_err</name>
+              <description>Scatter Gather Decode Error. This error occurs if CURDESC_PTR and/or
+                NXTDESC_PTR points to an invalid address.</description>
+              <bitRange>[10:10]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>ioc_irq</name>
+              <description>Interrupt on Complete (IOC)</description>
+              <bitRange>[12:12]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_INTR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dly_irq</name>
+              <description>Interrupt on Delay Timer</description>
+              <bitRange>[13:13]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_INTR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>err_irq</name>
+              <description>Interrupt on Error</description>
+              <bitRange>[14:14]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_INTR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>irq_threshold_sts</name>
+              <description>Interrupt Threshold Status. Indicates current interrupt threshold value.</description>
+              <bitRange>[23:16]</bitRange>
+            </field>
+            <field>
+              <name>irq_delay_sts</name>
+              <description>Interrupt Delay Time Status. Indicates current interrupt delay time
+                value.</description>
+              <bitRange>[31:24]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>s2mm_curdesc</name>
+          <description>S2MM Current Descriptor Pointer. Lower 32 address bits.</description>
+          <addressOffset>0x38</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>curdesc_ptr</name>
+              <description>Indicates the pointer of the current Buffer Descriptor being worked on.</description>
+              <bitRange>[31:6]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>s2mm_curdesc_msb</name>
+          <description>S2MM Current Descriptor Pointer. Upper 32 address bits.</description>
+          <addressOffset>0x3c</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>curdesc_ptr</name>
+              <description>Indicates the pointer of the current Buffer Descriptor being worked on.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>s2mm_taildesc</name>
+          <description>S2MM Tail Descriptor Pointer. Lower 32 address bits.</description>
+          <addressOffset>0x40</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>taildesc_ptr</name>
+              <description>Indicates the pause pointer in a descriptor chain.</description>
+              <bitRange>[31:6]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>s2mm_taildesc_msb</name>
+          <description> S2MM Tail Descriptor Pointer. Upper 32 address bits.</description>
+          <addressOffset>0x44</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>taildesc_ptr</name>
+              <description>Indicates the pause pointer in a descriptor chain.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>s2mm_da</name>
+          <description>S2MM Destination Address. Lower 32 bit address</description>
+          <addressOffset>0x48</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>dst_addr</name>
+              <description>Indicates the destination address the AXI DMA writes to transfer data
+                from AXI4-Stream on S2MM Channel.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>s2mm_da_msb</name>
+          <description>S2MM Destination Address. Upper 32 bit address.</description>
+          <addressOffset>0x4c</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>dst_addr</name>
+              <description>Indicates the MSB 32 bits of the destination address the AXI DMA writes
+                to transfer data from AXI4-Stream on the S2MM Channel.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>s2mm_length</name>
+          <description>S2MM Buffer Length (Bytes)</description>
+          <addressOffset>0x58</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>ctl_lt_initialize_to_tx</name>
+              <bitRange>[0:0]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+
+    <!-- split here -->
+
+    <peripheral>
+      <name>MM2S_SG_DESC</name>
+      <description>Scatter Gather Descriptor</description>
+      <baseAddress>0x0</baseAddress>
+      <registers>
+        <register>
+          <name>nxt_desc</name>
+          <description>Next Descriptor Pointer</description>
+          <addressOffset>0x0</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>nxt_desc_ptr</name>
+              <description>Indicates the lower order pointer pointing to the first word of the next
+                descriptor</description>
+              <bitRange>[31:6]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>nxt_desc_msb</name>
+          <description>Upper 32 bits of Next Descriptor Pointer</description>
+          <addressOffset>0x4</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>nxt_desc_ptr</name>
+              <description>Indicates the MSB 32 bits of the pointer pointing to the first word of
+                the next descriptor</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>buf_addr</name>
+          <description>Buffer Address</description>
+          <addressOffset>0x8</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>buf_addr</name>
+              <description>Provides the location of the data to transfer from Memory Map to Stream.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>buf_addr_msb</name>
+          <description>Upper 32 bits of Buffer Address</description>
+          <addressOffset>0xc</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>buf_addr</name>
+              <description>Provides the MSB 32 bits of the location of the data to transfer from
+                Memory Map to Stream.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>control</name>
+          <addressOffset>0x18</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>buf_len</name>
+              <description>Indicates the size in bytes of the transfer buffer. This value indicates
+                the amount of bytes to transmit out on the MM2S stream.</description>
+              <bitRange>[25:0]</bitRange>
+            </field>
+            <field>
+              <name>txeof</name>
+              <description>End of Frame. Flag indicating the last buffer to be processed. This flag
+                is set by the CPU to indicate to AXI DMA that this descriptor describes the end of
+                the packet.</description>
+              <bitRange>[26:26]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NONE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TXEOF</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>txsof</name>
+              <description>Start of Frame. Flag indicating the first buffer to be processed. This
+                flag is set by the CPU to indicate to AXI DMA that this descriptor describes the
+                start of the packet.</description>
+              <bitRange>[27:27]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NONE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TXSOF</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>status</name>
+          <addressOffset>0x1c</addressOffset>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>tfer_bytes</name>
+              <description>Indicates the size in bytes of the actual data transferred for this
+                descriptor. This value indicates the amount of bytes to transmit out on MM2S stream.</description>
+              <bitRange>[25:0]</bitRange>
+            </field>
+            <field>
+              <name>dma_int_err</name>
+              <description>DMA Internal Error. Internal Error detected by primary AXI DataMover.
+                This error can occur if a 0 length bytes to transfer is fed to the AXI DataMover.</description>
+              <bitRange>[28:28]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_slv_err</name>
+              <description>DMA Slave Error. Slave Error detected by primary AXI DataMover. This
+                error occurs if the slave read from the Memory Map interface issues a Slave Error.</description>
+              <bitRange>[29:29]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_dec_err</name>
+              <description>DMA Decode Error. Decode Error detected by primary AXI DataMover. This
+                error occurs if the Descriptor Buffer Address points to an invalid address.</description>
+              <bitRange>[30:30]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>cmplt</name>
+              <description>Completed. This indicates to the software that the DMA Engine has
+                completed the transfer as described by the associated descriptor.</description>
+              <bitRange>[29:29]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>FALSE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRUE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <dim>5</dim>
+          <dimIncrement>4</dimIncrement>
+          <name>app[%s]</name>
+          <description>User Application Field [%s]</description>
+          <addressOffset>0x20</addressOffset>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>app</name>
+              <description>Specifies user-specific application data. When Status Control Stream is
+                enabled, the Application (APP) fields of the Start of Frame (SOF) Descriptor are
+                transmitted to the AXI Control Stream.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+
+    <peripheral>
+      <name>S2MM_SG_DESC</name>
+      <description>Scatter Gather Descriptor</description>
+      <baseAddress>0x0</baseAddress>
+      <registers>
+        <register>
+          <name>nxt_desc</name>
+          <description>Next Descriptor Pointer</description>
+          <addressOffset>0x0</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>nxt_desc_ptr</name>
+              <description>Indicates the lower order pointer pointing to the first word of the next
+                descriptor</description>
+              <bitRange>[31:6]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>nxt_desc_msb</name>
+          <description>Upper 32 bits of Next Descriptor Pointer</description>
+          <addressOffset>0x4</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>nxt_desc_ptr</name>
+              <description>Indicates the MSB 32 bits of the pointer pointing to the first word of
+                the next descriptor</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>buf_addr</name>
+          <description>Buffer Address</description>
+          <addressOffset>0x8</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>buf_addr</name>
+              <description>Provides the location of the data to transfer from Stream to Memory Map.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>buf_addr_msb</name>
+          <description>Upper 32 bits of Buffer Address</description>
+          <addressOffset>0xc</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>buf_addr</name>
+              <description>Provides the MSB 32 bits of the location of the data to transfer from
+                Stream to Memory Map.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>control</name>
+          <addressOffset>0x18</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>buf_len</name>
+              <description>Indicates the amount of space in bytes available for receiving data in an
+                S2MM stream.</description>
+              <bitRange>[25:0]</bitRange>
+            </field>
+            <field>
+              <name>rxeof</name>
+              <description>End of Frame. Flag indicating the last buffer to be processed. This flag
+                is set by the sw/user to indicate to AXI DMA that this descriptor describes the end
+                of the packet.</description>
+              <bitRange>[26:26]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>FALSE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRUE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>rxsof</name>
+              <description>Start of Frame. Flag indicating the first buffer to be processed. This
+                flag is set by the sw/user to indicate to AXI DMA that this descriptor describes the
+                start of the packet.</description>
+              <bitRange>[27:27]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>FALSE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRUE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>status</name>
+          <addressOffset>0x1c</addressOffset>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>tfer_bytes</name>
+              <description>This value indicates the amount of data received and stored in the buffer
+                described by this descriptor. This might or might not match the buffer length.</description>
+              <bitRange>[25:0]</bitRange>
+            </field>
+            <field>
+              <name>rxeof</name>
+              <description>End of Frame. Flag indicating buffer holds the last part of packet. This
+                bit is set by AXI DMA to indicate to the sw/user that the buffer associated with
+                this descriptor contains the end of the packet.</description>
+              <bitRange>[26:26]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>FALSE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRUE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>rxsof</name>
+              <description>Start of Frame. Flag indicating buffer holds first part of packet. This
+                bit is set by AXI DMA to indicate to the sw/user that the buffer associated with
+                this descriptor contains the start of the packet.</description>
+              <bitRange>[27:27]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>FALSE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRUE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_int_err</name>
+              <description>DMA Internal Error. Internal Error detected by primary AXI DataMover.
+                This error can occur if a 0 length bytes to transfer is fed to the AXI DataMover.</description>
+              <bitRange>[28:28]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_slv_err</name>
+              <description>DMA Slave Error. Slave Error detected by primary AXI DataMover. This
+                error occurs if the slave read from the Memory Map interface issues a Slave Error.</description>
+              <bitRange>[29:29]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>dma_dec_err</name>
+              <description>DMA Decode Error. Decode Error detected by primary AXI DataMover. This
+                error occurs if the Descriptor Buffer Address points to an invalid address.</description>
+              <bitRange>[30:30]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NO_ERR</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>DETECTED</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>cmplt</name>
+              <description>Completed. This indicates to the software that the DMA Engine has
+                completed the transfer as described by the associated descriptor.</description>
+              <bitRange>[29:29]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>FALSE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>TRUE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <dim>5</dim>
+          <dimIncrement>4</dimIncrement>
+          <name>app[%s]</name>
+          <description>User Application Field [%s]</description>
+          <addressOffset>0x20</addressOffset>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>app</name>
+              <description>Specifies user-specific application data. When Status Control Stream is
+                enabled, the Application (APP) fields of the Start of Frame (SOF) Descriptor are
+                transmitted to the AXI Control Stream.</description>
+              <bitRange>[31:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+  </peripherals>
+
+</device>

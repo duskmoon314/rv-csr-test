@@ -23,6 +23,8 @@ blake3 = { version = "1.2.0", default-features = false }
 array-init = "2.0.0"
 sbi-rt = { version = "0.0.2", features = ["legacy"] }
 volatile-register = "0.2.1"
+xxv-pac = { path = "xxv-pac" }
+axidma-pac = { path = "axidma-pac" }
 
 [features]
 board_lrv = ["uart_xilinx"]
