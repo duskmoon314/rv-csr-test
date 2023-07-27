@@ -16,11 +16,17 @@ impl Write for Stdout {
 
 lazy_static! {
     static ref STDOUT: Mutex<Stdout> = Mutex::new(Stdout {});
+    static ref STDERR: Mutex<Stdout> = Mutex::new(Stdout {});
 }
 
 #[allow(dead_code)]
 pub fn print(args: fmt::Arguments) {
     STDOUT.lock().write_fmt(args).unwrap();
+}
+
+#[allow(dead_code)]
+pub fn print_err(args: fmt::Arguments) {
+    STDERR.lock().write_fmt(args).unwrap();
 }
 
 #[macro_export]
@@ -34,6 +40,13 @@ macro_rules! print {
 macro_rules! println {
     ($fmt: literal $(, $($arg: tt)+)?) => {
         $crate::console::print(format_args!(concat!($fmt, "\r\n") $(, $($arg)+)?));
+    }
+}
+
+#[macro_export]
+macro_rules! println_err {
+    ($fmt: literal $(, $($arg: tt)+)?) => {
+        $crate::console::print_err(format_args!(concat!($fmt, "\r\n") $(, $($arg)+)?));
     }
 }
 

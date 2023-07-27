@@ -9,7 +9,7 @@
 #[macro_use]
 extern crate log;
 extern crate alloc;
-use core::arch::asm;
+use core::{arch::asm, sync::atomic::AtomicU16};
 
 use crate::{
     config::{CLOCK_FREQ, CPU_NUM, TRIGGER_GPIO_BASE},
@@ -27,21 +27,23 @@ use uart_xilinx::uart_lite::MmioUartAxiLite;
 
 #[macro_use]
 mod console;
+mod axidma;
 mod config;
 mod lang_items;
 mod logger;
 mod mm;
+mod net;
 mod plic;
 mod sbi;
 mod stack;
 mod trap;
 mod user_uart;
+mod xxv_dma_example;
 
 static IS_TIMEOUT: AtomicBool = AtomicBool::new(false);
 static IS_HART1_INIT: AtomicBool = AtomicBool::new(false);
 lazy_static! {
-    pub static ref HAS_INTR: [AtomicBool; CPU_NUM] =
-        array_init::array_init(|_| AtomicBool::new(false));
+    pub static ref HAS_INTR: [AtomicU16; CPU_NUM] = array_init::array_init(|_| AtomicU16::new(0));
 }
 pub const BAUD_RATE: usize = 6_250_000;
 
@@ -187,6 +189,9 @@ pub fn rust_main(hart_id: usize) -> ! {
     // info!("interrupt mode test finished");
     // delay(1000);
 
+    #[cfg(feature = "board_lrv")]
+    xxv_dma_example::xxv_dma_example(hart_id, 'S');
+
     unsafe {
         sip::set_ssoft();
         sip::set_usoft();
@@ -293,9 +298,9 @@ fn plic_gpio_trigger_test(hart_id: usize, mode: char) {
     }
 
     while !IS_TIMEOUT.load(Relaxed) {
-        if HAS_INTR[hart_id].load(Relaxed) {
+        if HAS_INTR[hart_id].load(Relaxed) > 0 {
             gpio_write(TRIGGER_GPIO_BASE, 0);
-            HAS_INTR[hart_id].store(false, Relaxed);
+            HAS_INTR[hart_id].store(0, Relaxed);
             Plic::complete(context, irq);
             intr_cnt += 1;
             info!("new gpio intr! cnt: {}", intr_cnt);
@@ -304,7 +309,7 @@ fn plic_gpio_trigger_test(hart_id: usize, mode: char) {
         }
     }
     gpio_write(TRIGGER_GPIO_BASE, 0);
-    HAS_INTR[hart_id].store(false, Relaxed);
+    HAS_INTR[hart_id].store(0, Relaxed);
     Plic::claim(context);
     Plic::complete(context, irq);
     Plic::disable(context, irq);
@@ -402,7 +407,7 @@ fn uart_speed_test() {
     info!("uart2 rx {}, tx {}", uart2.rx_count, uart2.tx_count);
 }
 
-fn delay(ms: usize) {
+pub fn delay(ms: usize) {
     let start = time::read();
     while time::read() - start < CLOCK_FREQ * ms / 1000 {}
 }
@@ -483,9 +488,9 @@ fn uart_speed_test_multihart_intr(hart_id: usize, mode: char) {
                 hasher.update(&[ch]);
             }
         }
-        if HAS_INTR[hart_id].load(Relaxed) {
+        if HAS_INTR[hart_id].load(Relaxed) > 0 {
             uart1.interrupt_handler();
-            HAS_INTR[hart_id].store(false, Relaxed);
+            HAS_INTR[hart_id].store(0, Relaxed);
             Plic::complete(context, irq);
             // info!("new intr!");
         }

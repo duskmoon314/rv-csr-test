@@ -30,12 +30,9 @@ pub fn init() {
 
 #[cfg(feature = "board_lrv")]
 pub fn init() {
-    Plic::set_priority(1, Priority::lowest());
-    Plic::set_priority(2, Priority::lowest());
-    Plic::set_priority(3, Priority::lowest());
-    Plic::set_priority(4, Priority::lowest());
-    Plic::set_priority(5, Priority::lowest());
-    Plic::set_priority(6, Priority::lowest());
+    for intr in 1..=6 {
+        Plic::set_priority(intr, Priority::lowest());
+    }
 }
 
 #[cfg(feature = "board_qemu")]
@@ -57,9 +54,9 @@ pub fn init_hart(hart_id: usize) {
 
 pub fn handle_external_interrupt(hart_id: usize, mode: char) {
     let context = get_context(hart_id, mode);
-    while let Some(_irq) = Plic::claim(context) {
-        // debug!("[PLIC] IRQ: {:?}", irq);
-        HAS_INTR[hart_id].store(true, Relaxed);
+    if let Some(irq) = Plic::claim(context) {
+        println_err!("[PLIC] ctx: {}, IRQ: {:?}", context, irq);
+        HAS_INTR[hart_id].store(irq, Relaxed);
         // Plic::complete(context, irq)
     }
 }
