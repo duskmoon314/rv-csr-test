@@ -35,10 +35,9 @@ impl From<crate::W<S2MM_DA_MSB_SPEC>> for W {
     }
 }
 #[doc = "Field `dst_addr` reader - Indicates the MSB 32 bits of the destination address the AXI DMA writes to transfer data from AXI4-Stream on the S2MM Channel."]
-pub type DST_ADDR_R = crate::FieldReader<u32, u32>;
+pub type DST_ADDR_R = crate::FieldReader<u32>;
 #[doc = "Field `dst_addr` writer - Indicates the MSB 32 bits of the destination address the AXI DMA writes to transfer data from AXI4-Stream on the S2MM Channel."]
-pub type DST_ADDR_W<'a, const O: u8> =
-    crate::FieldWriter<'a, u32, S2MM_DA_MSB_SPEC, u32, u32, 32, O>;
+pub type DST_ADDR_W<'a, const O: u8> = crate::FieldWriter<'a, S2MM_DA_MSB_SPEC, 32, O, u32>;
 impl R {
     #[doc = "Bits 0:31 - Indicates the MSB 32 bits of the destination address the AXI DMA writes to transfer data from AXI4-Stream on the S2MM Channel."]
     #[inline(always)]

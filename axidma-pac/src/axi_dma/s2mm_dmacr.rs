@@ -71,7 +71,7 @@ impl RUN_STOP_R {
     }
 }
 #[doc = "Field `run_stop` writer - Run / Stop control for controlling running and stopping of the DMA channel."]
-pub type RUN_STOP_W<'a, const O: u8> = crate::BitWriter<'a, u32, S2MM_DMACR_SPEC, RUN_STOP_A, O>;
+pub type RUN_STOP_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMACR_SPEC, O, RUN_STOP_A>;
 impl<'a, const O: u8> RUN_STOP_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -121,7 +121,7 @@ impl RESET_R {
     }
 }
 #[doc = "Field `reset` writer - Soft reset for resetting the AXI DMA core"]
-pub type RESET_W<'a, const O: u8> = crate::BitWriter<'a, u32, S2MM_DMACR_SPEC, RESET_A, O>;
+pub type RESET_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMACR_SPEC, O, RESET_A>;
 impl<'a, const O: u8> RESET_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -171,7 +171,7 @@ impl KEYHOLE_R {
     }
 }
 #[doc = "Field `keyhole` writer - Keyhole Read"]
-pub type KEYHOLE_W<'a, const O: u8> = crate::BitWriter<'a, u32, S2MM_DMACR_SPEC, KEYHOLE_A, O>;
+pub type KEYHOLE_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMACR_SPEC, O, KEYHOLE_A>;
 impl<'a, const O: u8> KEYHOLE_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -222,7 +222,7 @@ impl CYCLIC_BUFFER_DESCRIPTOR_R {
 }
 #[doc = "Field `cyclic_buffer_descriptor` writer - When set to 1, the DMA operates in Cyclic Buffer Descriptor (BD) mode without any user intervention"]
 pub type CYCLIC_BUFFER_DESCRIPTOR_W<'a, const O: u8> =
-    crate::BitWriter<'a, u32, S2MM_DMACR_SPEC, CYCLIC_BUFFER_DESCRIPTOR_A, O>;
+    crate::BitWriter<'a, S2MM_DMACR_SPEC, O, CYCLIC_BUFFER_DESCRIPTOR_A>;
 impl<'a, const O: u8> CYCLIC_BUFFER_DESCRIPTOR_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -272,8 +272,7 @@ impl IOC_IRQ_EN_R {
     }
 }
 #[doc = "Field `ioc_irq_en` writer - Interrupt on Complete (IOC) Interrupt Enable"]
-pub type IOC_IRQ_EN_W<'a, const O: u8> =
-    crate::BitWriter<'a, u32, S2MM_DMACR_SPEC, IOC_IRQ_EN_A, O>;
+pub type IOC_IRQ_EN_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMACR_SPEC, O, IOC_IRQ_EN_A>;
 impl<'a, const O: u8> IOC_IRQ_EN_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -323,8 +322,7 @@ impl DLY_IRQ_EN_R {
     }
 }
 #[doc = "Field `dly_irq_en` writer - Interrupt on Delay Timer Interrupt Enable"]
-pub type DLY_IRQ_EN_W<'a, const O: u8> =
-    crate::BitWriter<'a, u32, S2MM_DMACR_SPEC, DLY_IRQ_EN_A, O>;
+pub type DLY_IRQ_EN_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMACR_SPEC, O, DLY_IRQ_EN_A>;
 impl<'a, const O: u8> DLY_IRQ_EN_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -374,8 +372,7 @@ impl ERR_IRQ_EN_R {
     }
 }
 #[doc = "Field `err_irq_en` writer - Interrupt on Error Interrupt Enable"]
-pub type ERR_IRQ_EN_W<'a, const O: u8> =
-    crate::BitWriter<'a, u32, S2MM_DMACR_SPEC, ERR_IRQ_EN_A, O>;
+pub type ERR_IRQ_EN_W<'a, const O: u8> = crate::BitWriter<'a, S2MM_DMACR_SPEC, O, ERR_IRQ_EN_A>;
 impl<'a, const O: u8> ERR_IRQ_EN_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -389,14 +386,13 @@ impl<'a, const O: u8> ERR_IRQ_EN_W<'a, O> {
     }
 }
 #[doc = "Field `irq_threshold` reader - Interrupt Threshold"]
-pub type IRQ_THRESHOLD_R = crate::FieldReader<u8, u8>;
+pub type IRQ_THRESHOLD_R = crate::FieldReader;
 #[doc = "Field `irq_threshold` writer - Interrupt Threshold"]
-pub type IRQ_THRESHOLD_W<'a, const O: u8> =
-    crate::FieldWriter<'a, u32, S2MM_DMACR_SPEC, u8, u8, 8, O>;
+pub type IRQ_THRESHOLD_W<'a, const O: u8> = crate::FieldWriter<'a, S2MM_DMACR_SPEC, 8, O>;
 #[doc = "Field `irq_delay` reader - Interrupt Delay Time Out"]
-pub type IRQ_DELAY_R = crate::FieldReader<u8, u8>;
+pub type IRQ_DELAY_R = crate::FieldReader;
 #[doc = "Field `irq_delay` writer - Interrupt Delay Time Out"]
-pub type IRQ_DELAY_W<'a, const O: u8> = crate::FieldWriter<'a, u32, S2MM_DMACR_SPEC, u8, u8, 8, O>;
+pub type IRQ_DELAY_W<'a, const O: u8> = crate::FieldWriter<'a, S2MM_DMACR_SPEC, 8, O>;
 impl R {
     #[doc = "Bit 0 - Run / Stop control for controlling running and stopping of the DMA channel."]
     #[inline(always)]

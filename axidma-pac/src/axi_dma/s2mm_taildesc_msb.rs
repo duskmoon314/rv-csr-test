@@ -35,10 +35,10 @@ impl From<crate::W<S2MM_TAILDESC_MSB_SPEC>> for W {
     }
 }
 #[doc = "Field `taildesc_ptr` reader - Indicates the pause pointer in a descriptor chain."]
-pub type TAILDESC_PTR_R = crate::FieldReader<u32, u32>;
+pub type TAILDESC_PTR_R = crate::FieldReader<u32>;
 #[doc = "Field `taildesc_ptr` writer - Indicates the pause pointer in a descriptor chain."]
 pub type TAILDESC_PTR_W<'a, const O: u8> =
-    crate::FieldWriter<'a, u32, S2MM_TAILDESC_MSB_SPEC, u32, u32, 32, O>;
+    crate::FieldWriter<'a, S2MM_TAILDESC_MSB_SPEC, 32, O, u32>;
 impl R {
     #[doc = "Bits 0:31 - Indicates the pause pointer in a descriptor chain."]
     #[inline(always)]

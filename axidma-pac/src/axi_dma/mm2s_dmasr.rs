@@ -71,7 +71,7 @@ impl HALTED_R {
     }
 }
 #[doc = "Field `halted` writer - DMA Channel Halted. Indicates the run/stop state of the DMA channel."]
-pub type HALTED_W<'a, const O: u8> = crate::BitWriter<'a, u32, MM2S_DMASR_SPEC, HALTED_A, O>;
+pub type HALTED_W<'a, const O: u8> = crate::BitWriter<'a, MM2S_DMASR_SPEC, O, HALTED_A>;
 impl<'a, const O: u8> HALTED_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -121,7 +121,7 @@ impl IDLE_R {
     }
 }
 #[doc = "Field `idle` writer - DMA Channel Idle. Indicates the state of AXI DMA operations."]
-pub type IDLE_W<'a, const O: u8> = crate::BitWriter<'a, u32, MM2S_DMASR_SPEC, IDLE_A, O>;
+pub type IDLE_W<'a, const O: u8> = crate::BitWriter<'a, MM2S_DMASR_SPEC, O, IDLE_A>;
 impl<'a, const O: u8> IDLE_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -171,7 +171,7 @@ impl SG_INCLD_R {
     }
 }
 #[doc = "Field `sg_incld` writer - Scatter Gather Engine Included. DMASR.SGIncld = 1 indicates the Scatter Gather engine is included and the AXI DMA is configured for Scatter Gather mode."]
-pub type SG_INCLD_W<'a, const O: u8> = crate::BitWriter<'a, u32, MM2S_DMASR_SPEC, SG_INCLD_A, O>;
+pub type SG_INCLD_W<'a, const O: u8> = crate::BitWriter<'a, MM2S_DMASR_SPEC, O, SG_INCLD_A>;
 impl<'a, const O: u8> SG_INCLD_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -221,8 +221,7 @@ impl DMA_INT_ERR_R {
     }
 }
 #[doc = "Field `dma_int_err` writer - DMA Internal Error. Internal error occurs if the buffer length specified in the fetched descriptor is set to 0."]
-pub type DMA_INT_ERR_W<'a, const O: u8> =
-    crate::BitWriter<'a, u32, MM2S_DMASR_SPEC, DMA_INT_ERR_A, O>;
+pub type DMA_INT_ERR_W<'a, const O: u8> = crate::BitWriter<'a, MM2S_DMASR_SPEC, O, DMA_INT_ERR_A>;
 impl<'a, const O: u8> DMA_INT_ERR_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -272,8 +271,7 @@ impl DMA_SLV_ERR_R {
     }
 }
 #[doc = "Field `dma_slv_err` writer - DMA Slave Error. This error occurs if the slave read from the Memory Map interface issues a Slave Error."]
-pub type DMA_SLV_ERR_W<'a, const O: u8> =
-    crate::BitWriter<'a, u32, MM2S_DMASR_SPEC, DMA_SLV_ERR_A, O>;
+pub type DMA_SLV_ERR_W<'a, const O: u8> = crate::BitWriter<'a, MM2S_DMASR_SPEC, O, DMA_SLV_ERR_A>;
 impl<'a, const O: u8> DMA_SLV_ERR_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -323,8 +321,7 @@ impl DMA_DEC_ERR_R {
     }
 }
 #[doc = "Field `dma_dec_err` writer - DMA Decode Error. This error occurs if the address request points to an invalid address."]
-pub type DMA_DEC_ERR_W<'a, const O: u8> =
-    crate::BitWriter<'a, u32, MM2S_DMASR_SPEC, DMA_DEC_ERR_A, O>;
+pub type DMA_DEC_ERR_W<'a, const O: u8> = crate::BitWriter<'a, MM2S_DMASR_SPEC, O, DMA_DEC_ERR_A>;
 impl<'a, const O: u8> DMA_DEC_ERR_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -374,8 +371,7 @@ impl SG_INT_ERR_R {
     }
 }
 #[doc = "Field `sg_int_err` writer - Scatter Gather Internal Error. This error occurs if a descriptor with the “Complete bit” already set is fetched."]
-pub type SG_INT_ERR_W<'a, const O: u8> =
-    crate::BitWriter<'a, u32, MM2S_DMASR_SPEC, SG_INT_ERR_A, O>;
+pub type SG_INT_ERR_W<'a, const O: u8> = crate::BitWriter<'a, MM2S_DMASR_SPEC, O, SG_INT_ERR_A>;
 impl<'a, const O: u8> SG_INT_ERR_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -425,8 +421,7 @@ impl SG_SLV_ERR_R {
     }
 }
 #[doc = "Field `sg_slv_err` writer - Scatter Gather Slave Error. This error occurs if the slave read from on the Memory Map interface issues a Slave error."]
-pub type SG_SLV_ERR_W<'a, const O: u8> =
-    crate::BitWriter<'a, u32, MM2S_DMASR_SPEC, SG_SLV_ERR_A, O>;
+pub type SG_SLV_ERR_W<'a, const O: u8> = crate::BitWriter<'a, MM2S_DMASR_SPEC, O, SG_SLV_ERR_A>;
 impl<'a, const O: u8> SG_SLV_ERR_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -476,8 +471,7 @@ impl SG_DEC_ERR_R {
     }
 }
 #[doc = "Field `sg_dec_err` writer - Scatter Gather Decode Error. This error occurs if CURDESC_PTR and/or NXTDESC_PTR points to an invalid address."]
-pub type SG_DEC_ERR_W<'a, const O: u8> =
-    crate::BitWriter<'a, u32, MM2S_DMASR_SPEC, SG_DEC_ERR_A, O>;
+pub type SG_DEC_ERR_W<'a, const O: u8> = crate::BitWriter<'a, MM2S_DMASR_SPEC, O, SG_DEC_ERR_A>;
 impl<'a, const O: u8> SG_DEC_ERR_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -527,7 +521,7 @@ impl IOC_IRQ_R {
     }
 }
 #[doc = "Field `ioc_irq` writer - Interrupt on Complete (IOC)"]
-pub type IOC_IRQ_W<'a, const O: u8> = crate::BitWriter<'a, u32, MM2S_DMASR_SPEC, IOC_IRQ_A, O>;
+pub type IOC_IRQ_W<'a, const O: u8> = crate::BitWriter<'a, MM2S_DMASR_SPEC, O, IOC_IRQ_A>;
 impl<'a, const O: u8> IOC_IRQ_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -577,7 +571,7 @@ impl DLY_IRQ_R {
     }
 }
 #[doc = "Field `dly_irq` writer - Interrupt on Delay Timer"]
-pub type DLY_IRQ_W<'a, const O: u8> = crate::BitWriter<'a, u32, MM2S_DMASR_SPEC, DLY_IRQ_A, O>;
+pub type DLY_IRQ_W<'a, const O: u8> = crate::BitWriter<'a, MM2S_DMASR_SPEC, O, DLY_IRQ_A>;
 impl<'a, const O: u8> DLY_IRQ_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -627,7 +621,7 @@ impl ERR_IRQ_R {
     }
 }
 #[doc = "Field `err_irq` writer - Interrupt on Error"]
-pub type ERR_IRQ_W<'a, const O: u8> = crate::BitWriter<'a, u32, MM2S_DMASR_SPEC, ERR_IRQ_A, O>;
+pub type ERR_IRQ_W<'a, const O: u8> = crate::BitWriter<'a, MM2S_DMASR_SPEC, O, ERR_IRQ_A>;
 impl<'a, const O: u8> ERR_IRQ_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
@@ -641,15 +635,13 @@ impl<'a, const O: u8> ERR_IRQ_W<'a, O> {
     }
 }
 #[doc = "Field `irq_threshold_sts` reader - Interrupt Threshold Status. Indicates current interrupt threshold value."]
-pub type IRQ_THRESHOLD_STS_R = crate::FieldReader<u8, u8>;
+pub type IRQ_THRESHOLD_STS_R = crate::FieldReader;
 #[doc = "Field `irq_threshold_sts` writer - Interrupt Threshold Status. Indicates current interrupt threshold value."]
-pub type IRQ_THRESHOLD_STS_W<'a, const O: u8> =
-    crate::FieldWriter<'a, u32, MM2S_DMASR_SPEC, u8, u8, 8, O>;
+pub type IRQ_THRESHOLD_STS_W<'a, const O: u8> = crate::FieldWriter<'a, MM2S_DMASR_SPEC, 8, O>;
 #[doc = "Field `irq_delay_sts` reader - Interrupt Delay Time Status. Indicates current interrupt delay time value."]
-pub type IRQ_DELAY_STS_R = crate::FieldReader<u8, u8>;
+pub type IRQ_DELAY_STS_R = crate::FieldReader;
 #[doc = "Field `irq_delay_sts` writer - Interrupt Delay Time Status. Indicates current interrupt delay time value."]
-pub type IRQ_DELAY_STS_W<'a, const O: u8> =
-    crate::FieldWriter<'a, u32, MM2S_DMASR_SPEC, u8, u8, 8, O>;
+pub type IRQ_DELAY_STS_W<'a, const O: u8> = crate::FieldWriter<'a, MM2S_DMASR_SPEC, 8, O>;
 impl R {
     #[doc = "Bit 0 - DMA Channel Halted. Indicates the run/stop state of the DMA channel."]
     #[inline(always)]

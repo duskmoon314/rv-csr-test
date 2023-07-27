@@ -35,9 +35,9 @@ impl From<crate::W<MM2S_SA_SPEC>> for W {
     }
 }
 #[doc = "Field `src_addr` reader - Indicates the source address AXI DMA reads from to transfer data to AXI4-Stream on the MM2S Channel."]
-pub type SRC_ADDR_R = crate::FieldReader<u32, u32>;
+pub type SRC_ADDR_R = crate::FieldReader<u32>;
 #[doc = "Field `src_addr` writer - Indicates the source address AXI DMA reads from to transfer data to AXI4-Stream on the MM2S Channel."]
-pub type SRC_ADDR_W<'a, const O: u8> = crate::FieldWriter<'a, u32, MM2S_SA_SPEC, u32, u32, 32, O>;
+pub type SRC_ADDR_W<'a, const O: u8> = crate::FieldWriter<'a, MM2S_SA_SPEC, 32, O, u32>;
 impl R {
     #[doc = "Bits 0:31 - Indicates the source address AXI DMA reads from to transfer data to AXI4-Stream on the MM2S Channel."]
     #[inline(always)]

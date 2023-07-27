@@ -35,9 +35,9 @@ impl From<crate::W<MM2S_LENGTH_SPEC>> for W {
     }
 }
 #[doc = "Field `length` reader - Indicates the number of bytes to transfer for the MM2S channel."]
-pub type LENGTH_R = crate::FieldReader<u32, u32>;
+pub type LENGTH_R = crate::FieldReader<u32>;
 #[doc = "Field `length` writer - Indicates the number of bytes to transfer for the MM2S channel."]
-pub type LENGTH_W<'a, const O: u8> = crate::FieldWriter<'a, u32, MM2S_LENGTH_SPEC, u32, u32, 26, O>;
+pub type LENGTH_W<'a, const O: u8> = crate::FieldWriter<'a, MM2S_LENGTH_SPEC, 26, O, u32>;
 impl R {
     #[doc = "Bits 0:25 - Indicates the number of bytes to transfer for the MM2S channel."]
     #[inline(always)]

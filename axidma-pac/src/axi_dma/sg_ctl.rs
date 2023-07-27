@@ -35,13 +35,13 @@ impl From<crate::W<SG_CTL_SPEC>> for W {
     }
 }
 #[doc = "Field `sg_cache` reader - Scatter/Gather Cache Control. Values written in this register reflect on the m_axi_sg_arcache and m_axi_sg_awcache signals of the M_AXI_SG interface."]
-pub type SG_CACHE_R = crate::FieldReader<u8, u8>;
+pub type SG_CACHE_R = crate::FieldReader;
 #[doc = "Field `sg_cache` writer - Scatter/Gather Cache Control. Values written in this register reflect on the m_axi_sg_arcache and m_axi_sg_awcache signals of the M_AXI_SG interface."]
-pub type SG_CACHE_W<'a, const O: u8> = crate::FieldWriter<'a, u32, SG_CTL_SPEC, u8, u8, 4, O>;
+pub type SG_CACHE_W<'a, const O: u8> = crate::FieldWriter<'a, SG_CTL_SPEC, 4, O>;
 #[doc = "Field `sg_user` reader - Scatter/Gather User Control. Values written in this register reflect on the m_axi_sg_aruser and m_axi_sg_awuser signals of the M_AXI_SG interface."]
-pub type SG_USER_R = crate::FieldReader<u8, u8>;
+pub type SG_USER_R = crate::FieldReader;
 #[doc = "Field `sg_user` writer - Scatter/Gather User Control. Values written in this register reflect on the m_axi_sg_aruser and m_axi_sg_awuser signals of the M_AXI_SG interface."]
-pub type SG_USER_W<'a, const O: u8> = crate::FieldWriter<'a, u32, SG_CTL_SPEC, u8, u8, 4, O>;
+pub type SG_USER_W<'a, const O: u8> = crate::FieldWriter<'a, SG_CTL_SPEC, 4, O>;
 impl R {
     #[doc = "Bits 0:3 - Scatter/Gather Cache Control. Values written in this register reflect on the m_axi_sg_arcache and m_axi_sg_awcache signals of the M_AXI_SG interface."]
     #[inline(always)]

@@ -72,7 +72,7 @@ impl CTL_LT_INITIALIZE_TO_TX_R {
 }
 #[doc = "Field `ctl_lt_initialize_to_tx` writer - "]
 pub type CTL_LT_INITIALIZE_TO_TX_W<'a, const O: u8> =
-    crate::BitWriter<'a, u32, S2MM_LENGTH_SPEC, CTL_LT_INITIALIZE_TO_TX_A, O>;
+    crate::BitWriter<'a, S2MM_LENGTH_SPEC, O, CTL_LT_INITIALIZE_TO_TX_A>;
 impl<'a, const O: u8> CTL_LT_INITIALIZE_TO_TX_W<'a, O> {
     #[doc = "`0`"]
     #[inline(always)]
