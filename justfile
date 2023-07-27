@@ -4,8 +4,8 @@ SERIAL_FLAGS := "-serial /dev/pts/80 -serial /dev/null -serial /dev/null -serial
 # SERIAL_FLAGS := "-serial /dev/pts/1 -serial /dev/null -serial /dev/null -serial /dev/null -serial /dev/null"
 TARGET := "riscv64imac-unknown-none-elf"
 MODE := "release"
-OBJDUMP := "riscv64-unknown-elf-objdump"
-OBJCOPY := "riscv64-unknown-elf-objcopy"
+OBJDUMP := "rust-objdump"
+OBJCOPY := "rust-objcopy"
 # add-symbol-file target/riscv64gc-unknown-none-elf/release/rv-csr-test
 BUILD_PATH := "target/" + TARGET + "/" + MODE + "/"
 KERNEL_ELF := BUILD_PATH + "rv-csr-test"
