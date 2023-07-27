@@ -61,6 +61,9 @@ pub struct RegisterBlock {
     pub ansr: ANSR,
     #[doc = "0x45c - Stat AN_ABILITY Register"]
     pub anasr: ANASR,
+    _reserved26: [u8; 0x40],
+    #[doc = "0x4a0 - Stat GT_WIZ Register"]
+    pub gtwizsr: GTWIZSR,
 }
 #[doc = "grr (rw) register accessor: an alias for `Reg<GRR_SPEC>`"]
 pub type GRR = crate::Reg<grr::GRR_SPEC>;
@@ -166,3 +169,7 @@ pub mod ansr;
 pub type ANASR = crate::Reg<anasr::ANASR_SPEC>;
 #[doc = "Stat AN_ABILITY Register"]
 pub mod anasr;
+#[doc = "gtwizsr (r) register accessor: an alias for `Reg<GTWIZSR_SPEC>`"]
+pub type GTWIZSR = crate::Reg<gtwizsr::GTWIZSR_SPEC>;
+#[doc = "Stat GT_WIZ Register"]
+pub mod gtwizsr;

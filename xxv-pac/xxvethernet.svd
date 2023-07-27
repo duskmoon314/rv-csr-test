@@ -2,7 +2,7 @@
 
 <device schemaVersion="1.3"
   xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
-  xs:noNamespaceSchemaLocation="svd/CMSIS-SVD.xsd">
+  xs:noNamespaceSchemaLocation="cmsis-svd.xsd">
   <name>xxvethernet</name>
   <version>4.1</version>
   <description>xxvethernet device descript</description>
@@ -18,10 +18,10 @@
   <peripherals>
     <!-- xxv_ethernet_0 -->
     <peripheral>
-      <size>32</size>            <!-- default bit-width of any register contained in the device -->
       <name>XXV_ETHERNET</name>
       <description>XXV Ethernet MAC</description>
       <baseAddress>0x60110000</baseAddress>     <!-- mmio baseaddr -->
+      <size>32</size>            <!-- default bit-width of any register contained in the device -->
       <addressBlock>
         <offset>0x0</offset>
         <size>0x10000</size>
@@ -2213,6 +2213,42 @@
             <field>
               <name>stat_an_lp_ability_50gbase_cr2</name>
               <bitRange>[19:19]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>gtwizsr</name>
+          <description>Stat GT_WIZ Register</description>
+          <addressOffset>0x4a0</addressOffset>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>gtwiz_reset_tx_done</name>
+              <bitRange>[0:0]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>DISABLE</name>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ENABLE</name>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>gtwiz_reset_rx_done</name>
+              <bitRange>[1:1]</bitRange>
               <enumeratedValues>
                 <enumeratedValue>
                   <name>DISABLE</name>
