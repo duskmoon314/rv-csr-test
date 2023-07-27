@@ -1,5 +1,6 @@
 #[doc = r"Register block"]
 #[repr(C)]
+#[derive(Default)]
 pub struct RegisterBlock {
     #[doc = "0x00 - Next Descriptor Pointer"]
     pub nxt_desc: NXT_DESC,
@@ -41,7 +42,7 @@ pub mod control;
 pub type STATUS = crate::Reg<status::STATUS_SPEC>;
 #[doc = ""]
 pub mod status;
-#[doc = "app (r) register accessor: an alias for `Reg<APP_SPEC>`"]
+#[doc = "app (rw) register accessor: an alias for `Reg<APP_SPEC>`"]
 pub type APP = crate::Reg<app::APP_SPEC>;
 #[doc = "User Application Field \\[%s\\]"]
 pub mod app;

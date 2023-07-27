@@ -911,7 +911,7 @@
     <!-- split here -->
 
     <peripheral>
-      <name>MM2S_SG_DESC</name>
+      <name>SG_DESC</name>
       <description>Scatter Gather Descriptor</description>
       <baseAddress>0x0</baseAddress>
       <registers>
@@ -951,7 +951,7 @@
           <fields>
             <field>
               <name>buf_addr</name>
-              <description>Provides the location of the data to transfer from Memory Map to Stream.</description>
+              <description>Provides the location of the data to transfer.</description>
               <bitRange>[31:0]</bitRange>
             </field>
           </fields>
@@ -964,8 +964,7 @@
           <fields>
             <field>
               <name>buf_addr</name>
-              <description>Provides the MSB 32 bits of the location of the data to transfer from
-                Memory Map to Stream.</description>
+              <description>Provides the MSB 32 bits of the location of the data to transfer.</description>
               <bitRange>[31:0]</bitRange>
             </field>
           </fields>
@@ -977,219 +976,12 @@
           <fields>
             <field>
               <name>buf_len</name>
-              <description>Indicates the size in bytes of the transfer buffer. This value indicates
-                the amount of bytes to transmit out on the MM2S stream.</description>
+              <description>Indicates the amount of space in bytes of the stream.</description>
               <bitRange>[25:0]</bitRange>
             </field>
             <field>
-              <name>txeof</name>
-              <description>End of Frame. Flag indicating the last buffer to be processed. This flag
-                is set by the CPU to indicate to AXI DMA that this descriptor describes the end of
-                the packet.</description>
-              <bitRange>[26:26]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NONE</name>
-                  <value>0x0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>TXEOF</name>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>txsof</name>
-              <description>Start of Frame. Flag indicating the first buffer to be processed. This
-                flag is set by the CPU to indicate to AXI DMA that this descriptor describes the
-                start of the packet.</description>
-              <bitRange>[27:27]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NONE</name>
-                  <value>0x0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>TXSOF</name>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>status</name>
-          <addressOffset>0x1c</addressOffset>
-          <access>read-only</access>
-          <fields>
-            <field>
-              <name>tfer_bytes</name>
-              <description>Indicates the size in bytes of the actual data transferred for this
-                descriptor. This value indicates the amount of bytes to transmit out on MM2S stream.</description>
-              <bitRange>[25:0]</bitRange>
-            </field>
-            <field>
-              <name>dma_int_err</name>
-              <description>DMA Internal Error. Internal Error detected by primary AXI DataMover.
-                This error can occur if a 0 length bytes to transfer is fed to the AXI DataMover.</description>
-              <bitRange>[28:28]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NO_ERR</name>
-                  <value>0x0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>DETECTED</name>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>dma_slv_err</name>
-              <description>DMA Slave Error. Slave Error detected by primary AXI DataMover. This
-                error occurs if the slave read from the Memory Map interface issues a Slave Error.</description>
-              <bitRange>[29:29]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NO_ERR</name>
-                  <value>0x0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>DETECTED</name>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>dma_dec_err</name>
-              <description>DMA Decode Error. Decode Error detected by primary AXI DataMover. This
-                error occurs if the Descriptor Buffer Address points to an invalid address.</description>
-              <bitRange>[30:30]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NO_ERR</name>
-                  <value>0x0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>DETECTED</name>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>cmplt</name>
-              <description>Completed. This indicates to the software that the DMA Engine has
-                completed the transfer as described by the associated descriptor.</description>
-              <bitRange>[29:29]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>FALSE</name>
-                  <value>0x0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>TRUE</name>
-                  <value>0x1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <dim>5</dim>
-          <dimIncrement>4</dimIncrement>
-          <name>app[%s]</name>
-          <description>User Application Field [%s]</description>
-          <addressOffset>0x20</addressOffset>
-          <access>read-only</access>
-          <fields>
-            <field>
-              <name>app</name>
-              <description>Specifies user-specific application data. When Status Control Stream is
-                enabled, the Application (APP) fields of the Start of Frame (SOF) Descriptor are
-                transmitted to the AXI Control Stream.</description>
-              <bitRange>[31:0]</bitRange>
-            </field>
-          </fields>
-        </register>
-      </registers>
-    </peripheral>
-
-    <peripheral>
-      <name>S2MM_SG_DESC</name>
-      <description>Scatter Gather Descriptor</description>
-      <baseAddress>0x0</baseAddress>
-      <registers>
-        <register>
-          <name>nxt_desc</name>
-          <description>Next Descriptor Pointer</description>
-          <addressOffset>0x0</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>nxt_desc_ptr</name>
-              <description>Indicates the lower order pointer pointing to the first word of the next
-                descriptor</description>
-              <bitRange>[31:6]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>nxt_desc_msb</name>
-          <description>Upper 32 bits of Next Descriptor Pointer</description>
-          <addressOffset>0x4</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>nxt_desc_ptr</name>
-              <description>Indicates the MSB 32 bits of the pointer pointing to the first word of
-                the next descriptor</description>
-              <bitRange>[31:0]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>buf_addr</name>
-          <description>Buffer Address</description>
-          <addressOffset>0x8</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>buf_addr</name>
-              <description>Provides the location of the data to transfer from Stream to Memory Map.</description>
-              <bitRange>[31:0]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>buf_addr_msb</name>
-          <description>Upper 32 bits of Buffer Address</description>
-          <addressOffset>0xc</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>buf_addr</name>
-              <description>Provides the MSB 32 bits of the location of the data to transfer from
-                Stream to Memory Map.</description>
-              <bitRange>[31:0]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>control</name>
-          <addressOffset>0x18</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>buf_len</name>
-              <description>Indicates the amount of space in bytes available for receiving data in an
-                S2MM stream.</description>
-              <bitRange>[25:0]</bitRange>
-            </field>
-            <field>
-              <name>rxeof</name>
-              <description>End of Frame. Flag indicating the last buffer to be processed. This flag
-                is set by the sw/user to indicate to AXI DMA that this descriptor describes the end
-                of the packet.</description>
+              <name>eof</name>
+              <description>End of Frame. Flag indicating the last buffer to be processed.</description>
               <bitRange>[26:26]</bitRange>
               <enumeratedValues>
                 <enumeratedValue>
@@ -1203,10 +995,8 @@
               </enumeratedValues>
             </field>
             <field>
-              <name>rxsof</name>
-              <description>Start of Frame. Flag indicating the first buffer to be processed. This
-                flag is set by the sw/user to indicate to AXI DMA that this descriptor describes the
-                start of the packet.</description>
+              <name>sof</name>
+              <description>Start of Frame. Flag indicating the first buffer to be processed.</description>
               <bitRange>[27:27]</bitRange>
               <enumeratedValues>
                 <enumeratedValue>
@@ -1318,7 +1108,7 @@
               <name>cmplt</name>
               <description>Completed. This indicates to the software that the DMA Engine has
                 completed the transfer as described by the associated descriptor.</description>
-              <bitRange>[29:29]</bitRange>
+              <bitRange>[31:31]</bitRange>
               <enumeratedValues>
                 <enumeratedValue>
                   <name>FALSE</name>
@@ -1338,13 +1128,11 @@
           <name>app[%s]</name>
           <description>User Application Field [%s]</description>
           <addressOffset>0x20</addressOffset>
-          <access>read-only</access>
+          <access>read-write</access>
           <fields>
             <field>
               <name>app</name>
-              <description>Specifies user-specific application data. When Status Control Stream is
-                enabled, the Application (APP) fields of the Start of Frame (SOF) Descriptor are
-                transmitted to the AXI Control Stream.</description>
+              <description>Specifies user-specific application data.</description>
               <bitRange>[31:0]</bitRange>
             </field>
           </fields>
