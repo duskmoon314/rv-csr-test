@@ -56,7 +56,7 @@ pub fn handle_external_interrupt(hart_id: usize, mode: char) {
     let context = get_context(hart_id, mode);
     if let Some(irq) = Plic::claim(context) {
         println_err!("[PLIC] ctx: {}, IRQ: {:?}", context, irq);
-        HAS_INTR[hart_id].store(irq, Relaxed);
+        HAS_INTR[hart_id].fetch_or(1 << irq, Relaxed);
         // Plic::complete(context, irq)
     }
 }

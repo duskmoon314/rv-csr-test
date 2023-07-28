@@ -266,6 +266,8 @@ pub fn rust_main(hart_id: usize) -> ! {
     #[cfg(feature = "board_lrv")]
     plic_gpio_trigger_test(hart_id, 'U');
 
+    #[cfg(feature = "board_lrv")]
+    xxv_dma_example::xxv_dma_example(hart_id, 'U');
     // uart_lite_test_multihart_intr(hart_id, 'U');
     info!("test fin, waiting to shutdown...");
     delay(5000);
@@ -278,6 +280,7 @@ fn plic_gpio_trigger_test(hart_id: usize, mode: char) {
     plic::init_hart(hart_id);
     let context = plic::get_context(hart_id, mode);
     let irq = 6;
+    let irq_mask = 1 << irq;
     gpio_write(TRIGGER_GPIO_BASE, 0xffff_ffff);
     IS_TIMEOUT.store(false, Relaxed);
     let t = time::read();
@@ -298,9 +301,8 @@ fn plic_gpio_trigger_test(hart_id: usize, mode: char) {
     }
 
     while !IS_TIMEOUT.load(Relaxed) {
-        if HAS_INTR[hart_id].load(Relaxed) > 0 {
+        if HAS_INTR[hart_id].fetch_and(!irq_mask, Relaxed) & irq_mask > 0 {
             gpio_write(TRIGGER_GPIO_BASE, 0);
-            HAS_INTR[hart_id].store(0, Relaxed);
             Plic::complete(context, irq);
             intr_cnt += 1;
             info!("new gpio intr! cnt: {}", intr_cnt);
@@ -309,7 +311,7 @@ fn plic_gpio_trigger_test(hart_id: usize, mode: char) {
         }
     }
     gpio_write(TRIGGER_GPIO_BASE, 0);
-    HAS_INTR[hart_id].store(0, Relaxed);
+    HAS_INTR[hart_id].fetch_and(!irq_mask, Relaxed);
     Plic::claim(context);
     Plic::complete(context, irq);
     Plic::disable(context, irq);
