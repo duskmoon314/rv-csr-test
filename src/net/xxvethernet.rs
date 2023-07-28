@@ -97,16 +97,14 @@ impl Default for Xxvethernet {
 
 impl Xxvethernet {
     pub fn new(base_address: usize) -> Self {
-        let mut ret = Self {
+        Self {
             base_address,
             stats: 0,
             is_started: false,
             is_ready: true,
             options: XXE_DEFAULT_OPTIONS,
             flag: 0,
-        };
-        ret.reset();
-        ret
+        }
     }
 
     fn hardware(&self) -> &xxv_ethernet::RegisterBlock {
