@@ -72,6 +72,7 @@ impl AxiDmaBdRing {
         self.pending_cnt = 0;
         self.submit_cnt = 0;
         self.done_cnt = 0;
+        self.ring.clear();
 
         self.ring.reserve(bd_count);
         for _ in 0..bd_count {
@@ -97,7 +98,7 @@ impl AxiDmaBdRing {
         self.bd_restart = 0;
     }
 
-    pub fn submit<B>(&mut self, bufs: &[Pin<B>])
+    pub fn submit<B>(&mut self, bufs: &[&Pin<B>])
     where
         B: Deref,
         B::Target: AsRef<[u8]>,
@@ -105,7 +106,7 @@ impl AxiDmaBdRing {
         let bd_len = self.config.max_transfer_len;
         let mut total_buf_len = 0;
         for buf in bufs {
-            total_buf_len += (**buf).as_ref().len();
+            total_buf_len += (***buf).as_ref().len();
         }
         let total_bd_cnt = (total_buf_len + bd_len - 1) / bd_len;
         debug!(
@@ -119,7 +120,7 @@ impl AxiDmaBdRing {
         let start = self.bd_restart;
 
         for buf in bufs {
-            let buf = (**buf).as_ref();
+            let buf = (***buf).as_ref();
             let mut buf_len = buf.len();
             let mut buf_head = 0;
             let mut bd_len = self.config.max_transfer_len;
@@ -135,6 +136,13 @@ impl AxiDmaBdRing {
                     bd_len = buf.len();
                 }
                 bd.set_buf(&buf[buf_head..buf_head + bd_len]);
+                let peek_len = 16.min(bd_len);
+                trace!(
+                    "bd_ring::submit: peek buf[{}..{}]: {:x?}",
+                    buf_head,
+                    buf_head + peek_len,
+                    &buf[buf_head..buf_head + peek_len]
+                );
                 buf_head += bd_len;
                 buf_len -= bd_len;
                 self.bd_restart += 1;

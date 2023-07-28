@@ -115,7 +115,7 @@ impl AxiDma {
             None
         };
 
-        let mut ret = Self {
+        Self {
             base_address: config.base_address,
             has_sg: config.has_sg,
             is_micro_dma: config.is_micro_dma,
@@ -123,18 +123,7 @@ impl AxiDma {
             tx_bd_ring,
             rx_bd_ring,
             is_initialized: false,
-        };
-        ret.reset();
-        let mut timeout = AxiDma::RESET_TIMEOUT;
-        while timeout > 0 && !ret.reset_is_done() {
-            timeout -= 1;
         }
-        if timeout > 0 {
-            ret.is_initialized = true;
-        } else {
-            error!("AXIDMA: failed reset in intialization");
-        }
-        ret
     }
 
     #[inline]
@@ -142,7 +131,7 @@ impl AxiDma {
         unsafe { &*(self.base_address as *const _) }
     }
 
-    fn reset(&mut self) {
+    pub fn reset(&mut self) {
         let hardware: &axidma_pac::axi_dma::RegisterBlock =
             unsafe { &*(self.base_address as *const _) };
         if let Some(ring) = self.tx_bd_ring.as_mut() {
@@ -158,6 +147,16 @@ impl AxiDma {
             }
             hardware.s2mm_dmacr.modify(|_, w| w.reset().reset());
             ring.is_halted = true;
+        }
+
+        let mut timeout = AxiDma::RESET_TIMEOUT;
+        while timeout > 0 && !self.reset_is_done() {
+            timeout -= 1;
+        }
+        if timeout > 0 {
+            self.is_initialized = true;
+        } else {
+            error!("AXIDMA: failed reset in intialization");
         }
     }
 
@@ -312,7 +311,7 @@ impl AxiDma {
         }
     }
 
-    pub fn tx_submit<B>(&mut self, bufs: &[Pin<B>])
+    pub fn tx_submit<B>(&mut self, bufs: &[&Pin<B>])
     where
         B: Deref,
         B::Target: AsRef<[u8]>,
@@ -324,7 +323,7 @@ impl AxiDma {
         }
     }
 
-    pub fn rx_submit<B>(&mut self, bufs: &[Pin<B>])
+    pub fn rx_submit<B>(&mut self, bufs: &[&Pin<B>])
     where
         B: Deref,
         B::Target: AsRef<[u8]>,
